@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Shivam Mobile Care — Sitamarhi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#FDFBF7;--text:#1A1A1A;--subtext:#666;--card:#fff;
+  --teal:#0D9488;--teal-glow:#2DD4BF;--border:rgba(13,148,136,0.15);
+  --card-shadow:0 8px 30px rgb(0,0,0,0.04);--navbar-bg:rgba(253,251,247,0.88);
+  --input-bg:#f0ede8;
+}
+.dark{
+  --bg:#000;--text:#F5F5F5;--subtext:#888;--card:#0d0d0d;
+  --border:rgba(45,212,191,0.18);--card-shadow:0 0 0 1px rgba(45,212,191,0.12);
+  --navbar-bg:rgba(0,0,0,0.88);--input-bg:#111;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Montserrat',sans-serif;
+  background:var(--bg);color:var(--text);
+  transition:background .5s,color .5s;min-height:100vh;
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;opacity:.04;z-index:9999;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  background:var(--navbar-bg);border-bottom:1px solid var(--border);
+  padding:0 2rem;height:62px;display:flex;align-items:center;
+  justify-content:space-between;transition:background .5s;
+}
+.logo{font-weight:900;letter-spacing:-1.5px;font-size:1.15rem;cursor:pointer}
+.logo em{font-style:normal;color:var(--teal);text-decoration:underline;text-decoration-color:var(--teal-glow)}
+.nav-links{display:flex;gap:1.8rem;list-style:none}
+.nav-links li a{
+  color:var(--text);text-decoration:none;font-size:.78rem;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;position:relative;padding-bottom:3px;
+  transition:color .2s;
+}
+.nav-links li a::after{
+  content:'';position:absolute;bottom:0;left:0;width:0;height:2px;
+  background:var(--teal-glow);transition:width .3s cubic-bezier(.77,0,.18,1);
+}
+.nav-links li a:hover,.nav-links li a.active{color:var(--teal)}
+.nav-links li a:hover::after,.nav-links li a.active::after{width:100%}
+.nav-right{display:flex;align-items:center;gap:.8rem}
+.theme-btn{
+  background:none;border:1px solid var(--border);border-radius:20px;
+  padding:5px 12px;cursor:pointer;font-size:1rem;transition:all .3s;color:var(--text);
+}
+.theme-btn:hover{border-color:var(--teal-glow);box-shadow:0 0 8px rgba(45,212,191,.3)}
+
+/* ── PAGES ── */
+.page{display:none;padding-top:62px;min-height:100vh;animation:fadeUp .5s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LIQUID BUTTON ── */
+.liquid-btn{
+  position:relative;overflow:hidden;background:var(--teal);color:#fff;border:none;
+  padding:.85rem 2.2rem;font-family:'Montserrat',sans-serif;font-weight:700;
+  font-size:.88rem;letter-spacing:1.5px;border-radius:2px;cursor:pointer;
+  transition:transform .2s,box-shadow .3s;text-transform:uppercase;
+}
+.liquid-btn::before{
+  content:'';position:absolute;bottom:-110%;left:0;right:0;height:110%;
+  background:var(--teal-glow);transition:bottom .38s cubic-bezier(.77,0,.18,1);
+}
+.liquid-btn:hover::before{bottom:0}
+.liquid-btn:hover{transform:scale(1.02);box-shadow:0 0 20px rgba(45,212,191,.35)}
+.liquid-btn span{position:relative;z-index:1}
+
+/* ── HERO ── */
+.hero{
+  height:calc(100vh - 62px);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:2rem;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(13,148,136,.08) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(13,148,136,.1);border:1px solid rgba(13,148,136,.4);
+  border-radius:20px;padding:.4rem 1.1rem;font-size:.75rem;font-weight:700;
+  color:var(--teal);margin-bottom:1.8rem;letter-spacing:.5px;
+  animation:badgePulse 2s infinite;
+}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(45,212,191,.4)}50%{box-shadow:0 0 0 8px rgba(45,212,191,0)}}
+.hero h1{
+  font-size:clamp(2.8rem,8vw,5.5rem);font-weight:900;
+  letter-spacing:-3px;line-height:1.0;margin-bottom:1.2rem;
+}
+.hero h1 .accent{color:var(--teal)}
+.hero p{font-size:.95rem;color:var(--subtext);margin-bottom:2rem;max-width:520px;line-height:1.7}
+.hero-scroll{position:absolute;bottom:2rem;font-size:.7rem;color:var(--subtext);letter-spacing:2px;animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+/* ── BENTO ── */
+.section{padding:2rem 3rem;max-width:1200px;margin:0 auto}
+.section-header{margin-bottom:2rem}
+.section-header h2{font-size:2rem;font-weight:900;letter-spacing:-2px}
+.section-header p{color:var(--subtext);font-size:.85rem;margin-top:.4rem}
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:3rem}
+.bento-card{
+  background:var(--card);border-radius:4px;border:1px solid var(--border);
+  box-shadow:var(--card-shadow);padding:1.6rem;transition:all .3s;
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1) backwards;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.88) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.bento-card:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:0 12px 40px rgba(13,148,136,.1)}
+.bento-card.large{grid-column:span 2;grid-row:span 1}
+.bento-card.wide{grid-column:span 3}
+.big-zero{
+  font-size:6rem;font-weight:900;color:var(--teal-glow);line-height:1;
+  animation:glowPulse 2s infinite;font-variant-numeric:tabular-nums;
+}
+@keyframes glowPulse{0%,100%{text-shadow:0 0 20px rgba(45,212,191,.3)}50%{text-shadow:0 0 40px rgba(45,212,191,.7)}}
+.bento-card h3{font-size:1.25rem;font-weight:900;letter-spacing:-1px;margin:.4rem 0 .2rem}
+.brand-logos{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.8rem;align-items:center}
+.brand-logo{
+  padding:.4rem .9rem;border-radius:2px;border:1px solid var(--border);
+  font-weight:700;font-size:.72rem;letter-spacing:2px;
+  filter:grayscale(1) opacity(.6);transition:all .35s;color:var(--subtext);cursor:default;
+}
+.brand-logo:hover{filter:grayscale(0) opacity(1);border-color:var(--teal);color:var(--teal);box-shadow:0 0 12px rgba(45,212,191,.25)}
+.verified{
+  display:inline-flex;align-items:center;gap:.4rem;
+  background:rgba(13,148,136,.12);border-radius:20px;
+  padding:.3rem .9rem;font-size:.78rem;color:var(--teal);font-weight:700;margin-top:.6rem;
+}
+.since{font-size:3rem;font-weight:900;letter-spacing:-2px;color:var(--teal)}
+.stat-big{font-size:2.8rem;font-weight:900;letter-spacing:-2px;color:var(--teal)}
+.stat-sub{font-size:.72rem;color:var(--subtext);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-top:.2rem}
+
+/* ── CATALOG ── */
+.filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.filter-chip{
+  padding:.4rem 1rem;border:1px solid var(--border);border-radius:20px;
+  font-size:.72rem;font-weight:700;cursor:pointer;transition:all .2s;
+  background:none;color:var(--text);font-family:'Montserrat',sans-serif;
+  letter-spacing:.8px;text-transform:uppercase;
+}
+.filter-chip.active,.filter-chip:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;padding:1rem 0}
+.prod-card{
+  background:var(--card);border-radius:4px;border:1px solid transparent;
+  box-shadow:var(--card-shadow);padding:1.3rem;cursor:pointer;
+  transition:all .3s;position:relative;animation:popIn .4s ease backwards;
+}
+.dark .prod-card{border-color:var(--border)}
+.prod-card:hover{border-color:var(--teal);transform:translateY(-4px);box-shadow:0 12px 40px rgba(13,148,136,.12)}
+.emi-badge{
+  display:inline-block;background:rgba(13,148,136,.12);color:var(--teal);
+  font-size:.62rem;font-weight:700;padding:.2rem .6rem;border-radius:2px;
+  letter-spacing:.8px;margin-bottom:.6rem;
+}
+.prod-brand{font-size:.65rem;color:var(--subtext);font-weight:700;letter-spacing:2.5px;text-transform:uppercase}
+.prod-name{font-weight:900;font-size:.95rem;margin:.2rem 0;letter-spacing:-.5px}
+.prod-specs{font-size:.72rem;color:var(--subtext);margin:.4rem 0;line-height:1.5}
+.prod-price{color:var(--teal);font-weight:900;font-size:1.1rem;letter-spacing:-1px}
+.wa-btn{
+  width:100%;margin-top:.9rem;background:#25D366;color:#fff;border:none;
+  padding:.65rem;font-family:'Montserrat',sans-serif;font-weight:700;
+  font-size:.72rem;border-radius:2px;cursor:pointer;transition:opacity .2s;
+  letter-spacing:.5px;
+}
+.wa-btn:hover{opacity:.88}
+
+/* ── MODAL ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);
+  z-index:600;align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);padding:1rem;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:var(--card);border:1px solid var(--border);border-radius:6px;
+  padding:2rem;max-width:500px;width:100%;animation:fadeUp .3s ease;
+  max-height:90vh;overflow-y:auto;
+}
+.modal-box h2{font-size:1.5rem;font-weight:900;letter-spacing:-1px}
+.spec-table{width:100%;margin:1rem 0;border-collapse:collapse}
+.spec-table td{padding:.55rem 0;font-size:.85rem;border-bottom:1px solid var(--border)}
+.spec-table td:first-child{color:var(--subtext);width:42%;font-weight:700;font-size:.75rem;letter-spacing:.5px;text-transform:uppercase}
+.spec-table td:last-child{font-weight:700}
+.close-btn{
+  background:none;border:1px solid var(--border);padding:.45rem 1.2rem;
+  border-radius:2px;cursor:pointer;color:var(--text);
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:.78rem;margin-top:.8rem;
+}
+.close-btn:hover{border-color:var(--teal);color:var(--teal)}
+
+/* ── STAFF PORTAL ── */
+.staff-center{max-width:480px;margin:0 auto;text-align:center;padding:2rem 1rem}
+.camera-wrap{
+  position:relative;width:230px;height:230px;margin:1.8rem auto;
+  border-radius:50%;overflow:hidden;background:#111;
+}
+.camera-ring{
+  position:absolute;inset:-7px;border-radius:50%;z-index:10;pointer-events:none;
+  border:3px solid var(--teal-glow);
+  animation:ringGlow 1.5s ease-in-out infinite;
+}
+@keyframes ringGlow{
+  0%,100%{box-shadow:0 0 10px rgba(45,212,191,.4),0 0 30px rgba(45,212,191,.1)}
+  50%{box-shadow:0 0 20px rgba(45,212,191,.7),0 0 50px rgba(45,212,191,.2)}
+}
+.camera-ring.success{
+  border-color:#10b981;animation:none;
+  box-shadow:0 0 30px rgba(16,185,129,.6),0 0 60px rgba(16,185,129,.2);
+}
+video,canvas{width:100%;height:100%;object-fit:cover;display:block}
+.punch-btns{display:flex;gap:1rem;justify-content:center;margin:1.8rem 0}
+.punch-btn{
+  padding:.75rem 2rem;border:none;border-radius:2px;
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:.82rem;
+  cursor:pointer;transition:all .3s;letter-spacing:1px;text-transform:uppercase;
+}
+.punch-in{background:var(--teal);color:#fff}
+.punch-in:hover{background:var(--teal-glow);transform:scale(1.03)}
+.punch-out{background:var(--card);border:1px solid var(--teal);color:var(--teal)}
+.punch-out:hover{background:var(--teal);color:#fff}
+.att-list-wrap{text-align:left;margin-top:1.5rem}
+.att-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.7rem 1rem;border:1px solid var(--border);border-radius:2px;
+  margin-bottom:.5rem;font-size:.82rem;
+}
+.att-in{color:#10b981;font-weight:700;font-size:.72rem;letter-spacing:1px}
+.att-out{color:#f59e0b;font-weight:700;font-size:.72rem;letter-spacing:1px}
+.att-time{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.85rem}
+
+/* ── OWNER DASHBOARD ── */
+.owner-page{
+  background:#050505;color:#F5F5F5;
+  min-height:calc(100vh - 62px);padding:2rem 2.5rem;
+}
+.owner-page *{--text:#F5F5F5;--subtext:#888;--card:#0e0e0e;--border:rgba(45,212,191,.15);--input-bg:#111}
+.o-grid-top{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem}
+.o-grid-mid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.owner-card{
+  background:#0e0e0e;border:1px solid rgba(45,212,191,.14);
+  border-radius:4px;padding:1.5rem;
+}
+.owner-card h3{
+  font-size:.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--teal-glow);margin-bottom:1rem;
+}
+.terminal-font{font-family:'JetBrains Mono',monospace}
+.stat-num{font-size:2.6rem;font-weight:900;color:var(--teal-glow);letter-spacing:-2px;font-family:'JetBrains Mono',monospace}
+.inv-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.inv-table th{
+  color:var(--teal-glow);font-size:.65rem;letter-spacing:1.5px;
+  text-align:left;padding:.4rem 0;border-bottom:1px solid rgba(45,212,191,.2);
+  text-transform:uppercase;
+}
+.inv-table td{padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,.04);color:#ccc}
+.inv-btn{
+  background:none;border:1px solid rgba(45,212,191,.3);color:var(--teal-glow);
+  padding:.18rem .5rem;font-size:.62rem;border-radius:2px;cursor:pointer;
+  font-family:'Montserrat',sans-serif;font-weight:700;transition:all .2s;
+}
+.inv-btn:hover{background:rgba(45,212,191,.1)}
+.inv-btn.del{border-color:rgba(248,113,113,.3);color:#f87171}
+.inv-btn.del:hover{background:rgba(248,113,113,.08)}
+.selfie-scroll{display:flex;gap:1rem;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:thin;scrollbar-color:var(--teal-glow) transparent}
+.selfie-item{flex-shrink:0;text-align:center;cursor:default}
+.selfie-avatar{
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),var(--teal-glow));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:1.15rem;color:#fff;
+  border:2px solid var(--teal-glow);margin-bottom:.35rem;
+}
+.selfie-time{font-size:.6rem;color:#555;font-family:'JetBrains Mono',monospace}
+.selfie-type-badge{font-size:.55rem;font-weight:700;letter-spacing:1px;padding:.1rem .4rem;border-radius:2px;margin-top:.2rem;display:inline-block}
+.type-in{background:rgba(16,185,129,.15);color:#10b981}
+.type-out{background:rgba(245,158,11,.15);color:#f59e0b}
+.scraper-row{display:flex;gap:.5rem;margin-bottom:1rem}
+.scraper-row input{
+  flex:1;background:#0a0a0a;border:1px solid rgba(45,212,191,.3);
+  color:#F5F5F5;padding:.65rem .9rem;font-family:'JetBrains Mono',monospace;
+  font-size:.8rem;border-radius:2px;outline:none;transition:border-color .2s;
+}
+.scraper-row input:focus{border-color:var(--teal-glow)}
+.scraper-row button{
+  background:var(--teal);color:#fff;border:none;padding:.65rem 1.2rem;
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:.78rem;
+  border-radius:2px;cursor:pointer;white-space:nowrap;transition:background .2s;
+}
+.scraper-row button:hover{background:var(--teal-glow)}
+.spec-result{
+  font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#bbb;line-height:1.9;
+  background:#080808;border:1px solid rgba(45,212,191,.1);
+  padding:.9rem;border-radius:2px;
+}
+.spec-key{color:var(--teal-glow)}
+.spec-val{color:#f5f5f5}
+.mini-svg{width:100%;margin-top:.8rem}
+.chip-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.8rem}
+.chip{font-size:.62rem;padding:.2rem .55rem;background:rgba(45,212,191,.1);color:var(--teal-glow);border-radius:2px;font-weight:700}
+.live-clock{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--teal-glow)}
+
+/* ── FOOTER ── */
+footer{
+  text-align:center;padding:2rem 1rem;font-size:.72rem;
+  color:var(--subtext);letter-spacing:1.5px;
+  border-top:1px solid var(--border);line-height:2;
+}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;background:var(--teal);color:#fff;
+  padding:.8rem 1.5rem;border-radius:2px;font-weight:700;font-size:.82rem;
+  z-index:900;transform:translateY(120px);transition:transform .3s cubic-bezier(.77,0,.18,1);
+  letter-spacing:.5px;max-width:320px;
+}
+.toast.show{transform:translateY(0)}
+
+/* ── CAMERA MSG ── */
+.cam-msg{font-size:.78rem;color:var(--subtext);margin-bottom:.5rem;height:1.2rem}
+.att-label{font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--subtext);margin-bottom:.6rem;display:block}
+</style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav>
+  <div class="logo" onclick="navigate('home')">SHIVAM <em>MOBILE CARE</em></div>
+  <ul class="nav-links">
+    <li><a href="#" class="active" data-page="home" onclick="nav(this)">Home</a></li>
+    <li><a href="#" data-page="catalog" onclick="nav(this)">Catalog</a></li>
+    <li><a href="#" data-page="staff" onclick="nav(this)">Staff</a></li>
+    <li><a href="#" data-page="owner" onclick="nav(this)">Owner</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════
+     HOME PAGE
+══════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge">📍 Runnisaidpur, Sitamarhi, Bihar</div>
+    <h1>
+      The Smartest<br/>
+      <span class="accent">Mobile Shop</span><br/>
+      in Sitamarhi.
+    </h1>
+    <p>Premium phones from Apple, Samsung, Vivo, Sony &amp; more — all at 0% EMI. Honest service since 2017.</p>
+    <button class="liquid-btn" onclick="navigate('catalog')"><span>Explore the Catalog →</span></button>
+    <div class="hero-scroll">▼ SCROLL</div>
+  </div>
+
+  <!-- Bento Grid -->
+  <div class="section">
+    <div class="bento">
+
+      <!-- Card 1: 0% EMI Large -->
+      <div class="bento-card large" style="animation-delay:.05s">
+        <div class="big-zero">0%</div>
+        <h3>EMI on All Brands</h3>
+        <p style="color:var(--subtext);font-size:.85rem;margin:.5rem 0 1.5rem;line-height:1.7">
+          No interest. No hidden fees. Get your dream phone today and pay in easy monthly instalments.
+        </p>
+        <button class="liquid-btn" onclick="navigate('catalog')"><span>Shop Now →</span></button>
+      </div>
+
+      <!-- Card 2: Trust -->
+      <div class="bento-card" style="animation-delay:.1s">
+        <div class="since">2017</div>
+        <p style="color:var(--subtext);font-size:.82rem;margin:.2rem 0 .6rem">Serving Sitamarhi Since</p>
+        <div class="verified">✅ Verified &amp; Trusted</div>
+        <p style="font-size:.78rem;color:var(--subtext);margin-top:1rem;line-height:1.7">
+          7+ years of honest service. Thousands of happy customers across Sitamarhi &amp; Runnisaidpur.
+        </p>
+      </div>
+
+      <!-- Card 3: Brands Wide -->
+      <div class="bento-card wide" style="animation-delay:.15s">
+        <p style="font-size:.65rem;font-weight:700;letter-spacing:2.5px;color:var(--subtext);text-transform:uppercase;margin-bottom:.6rem">Authorized Retailer For</p>
+        <div class="brand-logos">
+          <div class="brand-logo">APPLE</div>
+          <div class="brand-logo">SAMSUNG</div>
+          <div class="brand-logo">VIVO</div>
+          <div class="brand-logo">SONY</div>
+          <div class="brand-logo">LG</div>
+          <div class="brand-logo">XIAOMI</div>
+          <div class="brand-logo">REALME</div>
+          <div class="brand-logo">OPPO</div>
+        </div>
+      </div>
+
+      <!-- Card 4 & 5: Stats -->
+      <div class="bento-card" style="animation-delay:.2s;text-align:center">
+        <div class="stat-big">5000+</div>
+        <div class="stat-sub">Happy Customers</div>
+      </div>
+      <div class="bento-card" style="animation-delay:.25s;text-align:center">
+        <div class="stat-big">24h</div>
+        <div class="stat-sub">Quick Delivery</div>
+      </div>
+      <div class="bento-card" style="animation-delay:.3s;text-align:center">
+        <div class="stat-big">100%</div>
+        <div class="stat-sub">Authentic Products</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <div>📍 Opposite Bus Stand, Runnisaidpur, Sitamarhi, Bihar — 843329</div>
+    <div style="margin-top:.4rem">© 2024 Shivam Mobile Care. All Rights Reserved.</div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════════
+     CATALOG PAGE
+══════════════════════════════════ -->
+<div class="page" id="page-catalog">
+  <div class="section">
+    <div class="section-header">
+      <h2>Product Catalog</h2>
+      <p>All phones available at 0% EMI. Tap any card for full specs &amp; WhatsApp inquiry.</p>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-chip active" onclick="filterCatalog('All',this)">All</button>
+      <button class="filter-chip" onclick="filterCatalog('Apple',this)">Apple</button>
+      <button class="filter-chip" onclick="filterCatalog('Samsung',this)">Samsung</button>
+      <button class="filter-chip" onclick="filterCatalog('Vivo',this)">Vivo</button>
+      <button class="filter-chip" onclick="filterCatalog('Sony',this)">Sony</button>
+      <button class="filter-chip" onclick="filterCatalog('Xiaomi',this)">Xiaomi</button>
+    </div>
+
+    <div class="catalog-grid" id="catalogGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     STAFF PORTAL
+══════════════════════════════════ -->
+<div class="page" id="page-staff">
+  <div class="staff-center">
+    <h2 style="font-size:1.6rem;font-weight:900;letter-spacing:-1.5px">Staff Portal</h2>
+    <p style="color:var(--subtext);font-size:.85rem;margin:.4rem 0 0">Punch in or out with a selfie</p>
+
+    <div class="camera-wrap">
+      <div class="camera-ring" id="cameraRing"></div>
+      <video id="camVideo" autoplay playsinline muted style="display:none"></video>
+      <canvas id="camCanvas"></canvas>
+    </div>
+
+    <div class="cam-msg" id="camMsg">Tap a button to punch in or out</div>
+
+    <div class="punch-btns">
+      <button class="punch-btn punch-in" onclick="punch('IN')">⬆ Punch In</button>
+      <button class="punch-btn punch-out" onclick="punch('OUT')">⬇ Punch Out</button>
+    </div>
+
+    <div class="att-list-wrap">
+      <span class="att-label">Recent Activity</span>
+      <div id="attList">
+        <p style="font-size:.8rem;color:var(--subtext);text-align:center;padding:1rem 0">No records yet today</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     OWNER COMMAND CENTER
+══════════════════════════════════ -->
+<div class="page owner-page" id="page-owner">
+
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem">
+    <div>
+      <h2 style="font-size:1.4rem;font-weight:900;letter-spacing:-1px;font-family:'JetBrains Mono',monospace;color:#F5F5F5">
+        COMMAND_CENTER
+      </h2>
+      <p style="font-size:.7rem;color:#555;font-family:'JetBrains Mono',monospace">
+        owner@shivammobilecare:~$ live_dashboard --realtime
+      </p>
+    </div>
+    <div class="live-clock" id="liveClock"></div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="o-grid-top">
+    <div class="owner-card">
+      <h3>Today's Revenue</h3>
+      <div class="stat-num">₹48,200</div>
+      <div style="font-size:.72rem;color:#10b981;margin-top:.2rem">↑ 12% vs yesterday</div>
+      <svg class="mini-svg" viewBox="0 0 200 60" height="60">
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#2DD4BF" stop-opacity=".25"/>
+            <stop offset="100%" stop-color="#2DD4BF" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <polygon points="0,55 35,40 70,45 100,20 135,28 165,12 200,8 200,60 0,60" fill="url(#lg)"/>
+        <polyline points="0,55 35,40 70,45 100,20 135,28 165,12 200,8" fill="none" stroke="#2DD4BF" stroke-width="1.8" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="owner-card">
+      <h3>Total Inventory</h3>
+      <div class="stat-num">87</div>
+      <div style="font-size:.72rem;color:#888;margin-top:.2rem">Units in stock</div>
+      <div class="chip-row">
+        <span class="chip">Apple ×18</span>
+        <span class="chip">Samsung ×24</span>
+        <span class="chip">Vivo ×21</span>
+        <span class="chip">Other ×24</span>
+      </div>
+    </div>
+
+    <div class="owner-card">
+      <h3>Staff On Duty</h3>
+      <div class="stat-num">3 / 5</div>
+      <div style="font-size:.72rem;color:#888;margin-top:.2rem">Checked in today</div>
+      <div class="chip-row">
+        <span class="chip" style="background:rgba(16,185,129,.12);color:#10b981">SK ✓</span>
+        <span class="chip" style="background:rgba(16,185,129,.12);color:#10b981">RA ✓</span>
+        <span class="chip" style="background:rgba(16,185,129,.12);color:#10b981">PD ✓</span>
+        <span class="chip" style="opacity:.4">MK</span>
+        <span class="chip" style="opacity:.4">VK</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mid Row: Inventory + Scraper -->
+  <div class="o-grid-mid">
+    <div class="owner-card">
+      <h3>Inventory Manager</h3>
+      <table class="inv-table" id="invTable">
+        <tr><th>Model</th><th>Qty</th><th>Price</th><th>Act.</th></tr>
+      </table>
+      <button class="inv-btn" style="margin-top:.8rem;padding:.3rem 1rem" onclick="addProduct()">+ Add Product</button>
+    </div>
+
+    <div class="owner-card">
+      <h3>Spec Auto-Fill Tool</h3>
+      <div class="scraper-row">
+        <input type="text" id="scraperInput" placeholder="e.g. iPhone 16 Pro Max" onkeydown="if(event.key==='Enter')scrapeSpecs()"/>
+        <button onclick="scrapeSpecs()">Fetch Specs</button>
+      </div>
+      <div id="specResult" style="display:none" class="spec-result"></div>
+      <p style="font-size:.65rem;color:#444;margin-top:.6rem;font-family:'JetBrains Mono',monospace">
+        Try: "iPhone 16 Pro" · "Samsung S24 Ultra" · "Vivo V30 Pro"
+      </p>
+    </div>
+  </div>
+
+  <!-- Attendance Selfies -->
+  <div class="owner-card">
+    <h3>Today's Attendance Selfies</h3>
+    <div class="selfie-scroll" id="selfieScroll"></div>
+  </div>
+
+</div>
+
+<!-- ══ PRODUCT DETAIL MODAL ══ -->
+<div class="modal-overlay" id="prodModal" onclick="closeModal(event)">
+  <div class="modal-box" id="modalContent"></div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+const PRODUCTS = [
+  {id:1,brand:'Apple',name:'iPhone 16 Pro',price:'₹1,34,900',emi:true,ram:'8 GB',storage:'256 GB',camera:'48 MP Fusion',display:'6.3" Super Retina XDR OLED',battery:'3274 mAh',os:'iOS 18',color:'Natural Titanium'},
+  {id:2,brand:'Apple',name:'iPhone 15',price:'₹74,900',emi:true,ram:'6 GB',storage:'128 GB',camera:'48 MP',display:'6.1" Super Retina XDR OLED',battery:'3349 mAh',os:'iOS 17',color:'Pink'},
+  {id:3,brand:'Apple',name:'iPhone 14',price:'₹59,900',emi:true,ram:'6 GB',storage:'128 GB',camera:'12 MP Dual',display:'6.1" Super Retina XDR',battery:'3279 mAh',os:'iOS 16',color:'Midnight'},
+  {id:4,brand:'Samsung',name:'Galaxy S24 Ultra',price:'₹1,29,999',emi:true,ram:'12 GB',storage:'256 GB',camera:'200 MP Quad',display:'6.8" QHD+ AMOLED 120Hz',battery:'5000 mAh',os:'Android 14',color:'Titanium Black'},
+  {id:5,brand:'Samsung',name:'Galaxy A55',price:'₹37,999',emi:true,ram:'8 GB',storage:'128 GB',camera:'50 MP Triple',display:'6.6" FHD+ AMOLED 120Hz',battery:'5000 mAh',os:'Android 14',color:'Awesome Navy'},
+  {id:6,brand:'Samsung',name:'Galaxy M55',price:'₹24,999',emi:false,ram:'8 GB',storage:'128 GB',camera:'50 MP',display:'6.7" FHD+ AMOLED',battery:'6000 mAh',os:'Android 14',color:'Emerald Brown'},
+  {id:7,brand:'Vivo',name:'Vivo V30 Pro',price:'₹44,999',emi:true,ram:'12 GB',storage:'256 GB',camera:'50 MP ZEISS',display:'6.78" AMOLED 120Hz',battery:'5000 mAh',os:'Android 14',color:'Peacock Green'},
+  {id:8,brand:'Vivo',name:'Vivo T3x 5G',price:'₹12,999',emi:false,ram:'4 GB',storage:'128 GB',camera:'50 MP',display:'6.72" IPS LCD',battery:'6000 mAh',os:'Android 14',color:'Crimson Bliss'},
+  {id:9,brand:'Sony',name:'Xperia 1 VI',price:'₹1,09,990',emi:true,ram:'12 GB',storage:'256 GB',camera:'52 MP Zeiss Triple',display:'6.5" 4K HDR OLED',battery:'5000 mAh',os:'Android 14',color:'Khaki'},
+  {id:10,brand:'Xiaomi',name:'Xiaomi 14 Ultra',price:'₹99,999',emi:true,ram:'16 GB',storage:'512 GB',camera:'50 MP Leica Quad',display:'6.73" LTPO AMOLED',battery:'5000 mAh',os:'Android 14',color:'White'},
+  {id:11,brand:'Xiaomi',name:'Redmi Note 13',price:'₹16,999',emi:false,ram:'6 GB',storage:'128 GB',camera:'108 MP',display:'6.67" AMOLED 120Hz',battery:'5000 mAh',os:'Android 13',color:'Arctic White'},
+];
+
+let currentFilter = 'All';
+let attendance = [];
+let inventory = PRODUCTS.map(p => ({...p, stock: Math.floor(Math.random()*15)+3}));
+let camStream = null;
+
+// ── NAVIGATION ──
+function nav(el) {
+  event.preventDefault();
+  const page = el.dataset.page;
+  navigate(page);
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    if(a.dataset.page === page) a.classList.add('active');
+    else a.classList.remove('active');
+  });
+  window.scrollTo(0,0);
+  if(page==='catalog') renderCatalog();
+  if(page==='staff') initCamera();
+  if(page==='owner') renderOwner();
+}
+
+// ── THEME ──
+function toggleTheme() {
+  document.body.classList.toggle('dark');
+  document.getElementById('themeBtn').textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+}
+
+// ── CATALOG ──
+function renderCatalog() {
+  const grid = document.getElementById('catalogGrid');
+  const filtered = currentFilter === 'All' ? PRODUCTS : PRODUCTS.filter(p => p.brand === currentFilter);
+  grid.innerHTML = filtered.map((p,i) => `
+    <div class="prod-card" style="animation-delay:${i*0.05}s" onclick="openModal(${p.id})">
+      ${p.emi ? '<div class="emi-badge">✦ Available @ 0% EMI</div>' : ''}
+      <div class="prod-brand">${p.brand}</div>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-specs">${p.ram} RAM · ${p.storage} · ${p.camera}</div>
+      <div class="prod-price">${p.price}</div>
+      <button class="wa-btn" onclick="event.stopPropagation();waLink('${p.name}')">💬 Inquire on WhatsApp</button>
+    </div>
+  `).join('');
+}
+
+function filterCatalog(brand, el) {
+  currentFilter = brand;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderCatalog();
+}
+
+function openModal(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('modalContent').innerHTML = `
+    <div>
+      <div class="prod-brand" style="color:var(--teal);font-size:.68rem;letter-spacing:2.5px">${p.brand}</div>
+      <h2>${p.name}</h2>
+      <div style="color:var(--teal);font-weight:900;font-size:1.5rem;margin:.3rem 0;letter-spacing:-1px">${p.price}</div>
+      ${p.emi ? '<div class="emi-badge" style="font-size:.72rem">✦ 0% EMI Available</div>' : ''}
+    </div>
+    <table class="spec-table">
+      <tr><td>RAM</td><td>${p.ram}</td></tr>
+      <tr><td>Storage</td><td>${p.storage}</td></tr>
+      <tr><td>Camera</td><td>${p.camera}</td></tr>
+      <tr><td>Display</td><td>${p.display}</td></tr>
+      <tr><td>Battery</td><td>${p.battery}</td></tr>
+      <tr><td>OS</td><td>${p.os}</td></tr>
+      <tr><td>Color</td><td>${p.color}</td></tr>
+    </table>
+    <button class="wa-btn" onclick="waLink('${p.name}')">💬 Inquire on WhatsApp</button>
+    <br>
+    <button class="close-btn" onclick="document.getElementById('prodModal').classList.remove('open')">✕ Close</button>
+  `;
+  document.getElementById('prodModal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'prodModal') document.getElementById('prodModal').classList.remove('open');
+}
+
+function waLink(model) {
+  const msg = `Hi Shivam Mobile Care, I am interested in the ${model}. Please share more details.`;
+  window.open('https://wa.me/919876543210?text=' + encodeURIComponent(msg), '_blank');
+  showToast('Opening WhatsApp inquiry...');
+}
+
+// ── STAFF / CAMERA ──
+function initCamera() {
+  const video = document.getElementById('camVideo');
+  const canvas = document.getElementById('camCanvas');
+  const msg = document.getElementById('camMsg');
+
+  if (camStream) { video.style.display='block'; canvas.style.display='none'; return; }
+
+  navigator.mediaDevices && navigator.mediaDevices.getUserMedia({video:true,audio:false})
+    .then(stream => {
+      camStream = stream;
+      video.srcObject = stream;
+      video.style.display = 'block';
+      canvas.style.display = 'none';
+      msg.textContent = 'Camera ready — smile! 📸';
+    })
+    .catch(() => {
+      video.style.display = 'none';
+      canvas.style.display = 'block';
+      const ctx = canvas.getContext('2d');
+      canvas.width = 230; canvas.height = 230;
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0,0,230,230);
+      ctx.fillStyle = '#2DD4BF';
+      ctx.font = 'bold 48px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('📷', 115, 130);
+      msg.textContent = 'Camera unavailable — demo mode';
+    });
+}
+
+function punch(type) {
+  const ring = document.getElementById('cameraRing');
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const dateStr = now.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+
+  attendance.unshift({type, time:timeStr, date:dateStr});
+  if (attendance.length > 8) attendance.pop();
+
+  ring.classList.add('success');
+  showToast(`Punch ${type} recorded at ${timeStr} ✓`);
+  setTimeout(() => ring.classList.remove('success'), 3500);
+  renderAttendance();
+}
+
+function renderAttendance() {
+  const list = document.getElementById('attList');
+  if (!attendance.length) {
+    list.innerHTML = '<p style="font-size:.8rem;color:var(--subtext);text-align:center;padding:1rem 0">No records yet today</p>';
+    return;
+  }
+  list.innerHTML = attendance.slice(0,3).map(a => `
+    <div class="att-item">
+      <span class="${a.type==='IN'?'att-in':'att-out'}">${a.type==='IN'?'⬆ PUNCH IN':'⬇ PUNCH OUT'}</span>
+      <span style="font-size:.78rem;color:var(--subtext)">${a.date}</span>
+      <span class="att-time">${a.time}</span>
+    </div>
+  `).join('');
+}
+
+// ── OWNER DASHBOARD ──
+function renderOwner() {
+  renderInvTable();
+  renderSelfies();
+  updateClock();
+  if (!window._clockInterval) window._clockInterval = setInterval(updateClock, 1000);
+}
+
+function updateClock() {
+  const el = document.getElementById('liveClock');
+  if (el) el.textContent = new Date().toLocaleTimeString('en-IN') + ' IST';
+}
+
+function renderInvTable() {
+  const t = document.getElementById('invTable');
+  const rows = inventory.slice(0,6).map(p => `
+    <tr>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.name}">${p.name}</td>
+      <td>${p.stock}</td>
+      <td style="color:var(--teal-glow)">${p.price}</td>
+      <td>
+        <button class="inv-btn" onclick="editProd(${p.id})">Edit</button>
+        <button class="inv-btn del" onclick="deleteProd(${p.id})">Del</button>
+      </td>
+    </tr>
+  `).join('');
+  t.innerHTML = `<tr><th>Model</th><th>Qty</th><th>Price</th><th>Act.</th></tr>${rows}`;
+}
+
+function deleteProd(id) {
+  inventory = inventory.filter(p => p.id !== id);
+  renderInvTable();
+  showToast('Product removed from inventory');
+}
+function editProd(id) { showToast('Edit mode — connect to your backend to update'); }
+function addProduct() { showToast('Add product — connect to Supabase or Firebase'); }
+
+function renderSelfies() {
+  const staff = [
+    {initials:'SK', name:'Shivam', time:'09:02 AM', type:'IN'},
+    {initials:'RA', name:'Rahul', time:'09:15 AM', type:'IN'},
+    {initials:'PD', name:'Priya', time:'09:30 AM', type:'IN'},
+    {initials:'MK', name:'Manish', time:'11:45 AM', type:'OUT'},
+    {initials:'SK', name:'Shivam', time:'01:00 PM', type:'OUT'},
+    {initials:'RA', name:'Rahul', time:'01:30 PM', type:'OUT'},
+    {initials:'VK', name:'Vijay', time:'02:00 PM', type:'IN'},
+  ];
+  document.getElementById('selfieScroll').innerHTML = staff.map(s => `
+    <div class="selfie-item">
+      <div class="selfie-avatar">${s.initials}</div>
+      <div class="selfie-time">${s.time}</div>
+      <div class="selfie-type-badge ${s.type==='IN'?'type-in':'type-out'}">${s.type}</div>
+    </div>
+  `).join('');
+}
+
+// ── SPEC SCRAPER ──
+const SPEC_DB = {
+  'iphone 16 pro': {Brand:'Apple',Model:'iPhone 16 Pro',RAM:'8 GB',Storage:'128/256/512 GB',Camera:'48 MP Fusion + 12 MP UW + 12 MP 5x Tele',Display:'6.3" Super Retina XDR LTPO OLED',Battery:'3274 mAh',Chipset:'A18 Pro',OS:'iOS 18',Price:'₹1,19,900+'},
+  'iphone 15': {Brand:'Apple',Model:'iPhone 15',RAM:'6 GB',Storage:'128/256/512 GB',Camera:'48 MP + 12 MP UW',Display:'6.1" Super Retina XDR',Battery:'3349 mAh',Chipset:'A16 Bionic',OS:'iOS 17',Price:'₹74,900+'},
+  'samsung s24 ultra': {Brand:'Samsung',Model:'Galaxy S24 Ultra',RAM:'12 GB',Storage:'256/512 GB',Camera:'200 MP + 50 MP + 12 MP + 10 MP',Display:'6.8" QHD+ AMOLED 120Hz',Battery:'5000 mAh',Chipset:'Snapdragon 8 Gen 3',OS:'Android 14',Price:'₹1,29,999+'},
+  'vivo v30 pro': {Brand:'Vivo',Model:'V30 Pro',RAM:'12 GB',Storage:'256 GB',Camera:'50 MP ZEISS + 50 MP + 12 MP',Display:'6.78" AMOLED 120Hz',Battery:'5000 mAh',Chipset:'Snapdragon 7 Gen 3',OS:'Android 14',Price:'₹44,999'},
+  'xiaomi 14 ultra': {Brand:'Xiaomi',Model:'14 Ultra',RAM:'16 GB',Storage:'512 GB',Camera:'50 MP Leica × 4',Display:'6.73" LTPO AMOLED 4K',Battery:'5000 mAh',Chipset:'Snapdragon 8 Gen 3',OS:'Android 14',Price:'₹99,999'},
+  'redmi note 13': {Brand:'Xiaomi',Model:'Redmi Note 13',RAM:'6/8 GB',Storage:'128 GB',Camera:'108 MP + 8 MP + 2 MP',Display:'6.67" AMOLED 120Hz',Battery:'5000 mAh',Chipset:'Snapdragon 685',OS:'Android 13',Price:'₹16,999+'},
+};
+
+function scrapeSpecs() {
+  const q = document.getElementById('scraperInput').value.trim().toLowerCase();
+  const res = document.getElementById('specResult');
+  if (!q) { showToast('Please enter a phone model name'); return; }
+
+  res.style.display = 'block';
+  res.innerHTML = '<span style="color:#2DD4BF">⟳ Searching specs database...</span>';
+
+  setTimeout(() => {
+    const key = Object.keys(SPEC_DB).find(k =>
+      q.split(' ').some(w => k.includes(w) && w.length > 2)
+    );
+    if (key) {
+      const data = SPEC_DB[key];
+      res.innerHTML = Object.entries(data).map(([k,v]) =>
+        `<div><span class="spec-key">${k}:</span>&nbsp;<span class="spec-val">${v}</span></div>`
+      ).join('');
+    } else {
+      res.innerHTML = '<span style="color:#f87171">No specs found for "' + q + '".</span><br/><span style="color:#666">Try: "iPhone 16 Pro" · "Samsung S24 Ultra" · "Vivo V30 Pro"</span>';
+    }
+  }, 700);
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ── INIT ──
+renderCatalog();
+renderAttendance();
+</script>
+</body>
+</html>
