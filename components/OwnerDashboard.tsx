@@ -86,7 +86,7 @@ export default function OwnerDashboard({ showToast }: OwnerDashboardProps) {
       showToast("Failed to approve staff");
     } else {
       showToast("Staff approved ✓");
-      loadStaffData();
+      loadData();
     }
   };
 
@@ -96,7 +96,7 @@ export default function OwnerDashboard({ showToast }: OwnerDashboardProps) {
       showToast("Failed to reject staff");
     } else {
       showToast("Staff request rejected");
-      loadStaffData();
+      loadData();
     }
   };
 
