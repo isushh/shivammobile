@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
 import { getPendingStaff, getAllStaff, approveStaff, rejectStaff, getTodayAllAttendance, getShopLocation, updateShopLocation, type Profile } from "@/lib/supabase";
 
-const LocationPicker = dynamic(() => import('./LocationPicker'), { ssr: false });
+const StaffTrackerMap = dynamic(() => import('./StaffTrackerMap'), { ssr: false });
 
 const PRODUCTS_DATA = [
   { id: 1, brand: "Apple", name: "iPhone 16 Pro", price: "₹1,34,900", stock: 5 },
@@ -62,23 +62,7 @@ export default function OwnerDashboard({ showToast }: OwnerDashboardProps) {
     setShopLoc({ lat: loc.lat, lng: loc.lng });
   };
 
-  const setShopToCurrent = () => {
-    if (!navigator.geolocation) {
-      showToast("Geolocation not supported");
-      return;
-    }
-    showToast("Getting precise location...");
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const { latitude, longitude } = pos.coords;
-      const { error } = await updateShopLocation(latitude, longitude);
-      if (error) {
-        showToast("Failed to update location");
-      } else {
-        setShopLoc({ lat: latitude, lng: longitude });
-        showToast("✓ Shop location updated successfully!");
-      }
-    }, (err) => showToast("Permission denied"), { enableHighAccuracy: true });
-  };
+
 
   const handleApprove = async (id: string) => {
     const { error } = await approveStaff(id);
@@ -196,35 +180,24 @@ export default function OwnerDashboard({ showToast }: OwnerDashboardProps) {
         </div>
 
         <div className="owner-card" style={{ border: "1px solid var(--teal-glow)", boxShadow: "0 0 15px rgba(45, 212, 191, 0.1)" }}>
-          <h3>Shop Location Map</h3>
+          <h3>Staff Activity Map</h3>
           <p style={{ fontSize: ".65rem", color: "#888", marginBottom: ".8rem" }}>
-            Select your shop on the map or click &quot;Pin Point&quot; while standing inside.
+            Live view of staff punch locations relative to the shop.
           </p>
 
-          <LocationPicker 
-            initialPos={shopLoc} 
-            onLocationSelect={(lat, lng) => setShopLoc({ lat, lng })}
+          <StaffTrackerMap 
+            shopLoc={shopLoc} 
+            staffAttendance={attendanceRecords}
           />
 
-          <div style={{ display: "flex", gap: ".5rem", marginTop: ".8rem" }}>
-            <button 
-                className="inv-btn" 
-                onClick={() => updateShopLocation(shopLoc.lat, shopLoc.lng).then(() => showToast("✓ Shop location saved!"))}
-                style={{ flex: 1, padding: ".5rem", fontSize: ".7rem" }}
-            >
-                Save Map Pos
-            </button>
-            <button 
-                className="inv-btn" 
-                onClick={setShopToCurrent}
-                style={{ flex: 1, padding: ".5rem", fontSize: ".7rem", background: "rgba(45, 212, 191, 0.1)" }}
-            >
-                📍 Pin Point
+          <div style={{ marginTop: "1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ fontSize: ".65rem", color: "#2DD4BF", fontWeight: "bold" }}>
+              📍 SHOP: {shopLoc.lat.toFixed(4)}, {shopLoc.lng.toFixed(4)}
+            </div>
+            <button className="inv-btn" onClick={loadData} style={{ padding: ".3rem .8rem", fontSize: ".65rem" }}>
+              ↻ Refresh Map
             </button>
           </div>
-          <p style={{ fontSize: ".6rem", color: "#666", marginTop: ".6rem", textAlign: "center" }}>
-            Lat: {shopLoc.lat.toFixed(6)} | Lng: {shopLoc.lng.toFixed(6)}
-          </p>
         </div>
       </div>
 
