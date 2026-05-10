@@ -254,10 +254,10 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
             </div>
             <div className="input-group">
               <label>Quantity</label>
-              <input type="number" min="1" value={form.quantity} onChange={e => setForm({...form, quantity: parseInt(e.target.value)})} style={{ width: "100%", background: "#111", color: "#fff", border: "1px solid #333", padding: ".5rem", borderRadius: "4px", fontSize: ".75rem" }} />
+              <input type="number" min="1" value={form.quantity} onChange={e => setForm({...form, quantity: parseInt(e.target.value) || 1})} style={{ width: "100%", background: "#111", color: "#fff", border: "1px solid #333", padding: ".6rem", borderRadius: "4px", fontSize: "16px" }} />
             </div>
           </div>
-          <button type="submit" className="inv-btn" style={{ padding: ".8rem" }}>SUBMIT REPORT</button>
+          <button type="submit" className="inv-btn" style={{ padding: ".8rem", minHeight: "48px", fontWeight: "bold" }}>SUBMIT REPORT</button>
         </form>
       )}
 
@@ -288,14 +288,31 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
       {activeTab === 'history' && (
         <div>
            <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-              <select value={historyMonth} onChange={e => setHistoryMonth(parseInt(e.target.value))} style={{ flex: 1, background: "#111", color: "#fff", border: "1px solid #333", padding: ".4rem", borderRadius: "4px", fontSize: ".7rem" }}>
-                {Array.from({length: 12}).map((_, i) => <option key={i} value={i}>{new Date(2000, i).toLocaleString('default', {month: 'long'})}</option>)}
-              </select>
-              <select value={historyYear} onChange={e => setHistoryYear(parseInt(e.target.value))} style={{ flex: 1, background: "#111", color: "#fff", border: "1px solid #333", padding: ".4rem", borderRadius: "4px", fontSize: ".7rem" }}>
-                {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
-              </select>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: ".55rem", color: "#666", display: "block", marginBottom: "4px" }}>MONTH</label>
+                <select value={historyMonth} onChange={e => setHistoryMonth(parseInt(e.target.value))} style={{ width: "100%", background: "#111", color: "#fff", border: "1px solid #333", padding: ".6rem", borderRadius: "4px", fontSize: "16px" }}>
+                  {Array.from({length: 12}).map((_, i) => <option key={i} value={i}>{new Date(2000, i).toLocaleString('default', {month: 'long'})}</option>)}
+                </select>
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontSize: ".55rem", color: "#666", display: "block", marginBottom: "4px" }}>YEAR</label>
+                <select value={historyYear} onChange={e => setHistoryYear(parseInt(e.target.value))} style={{ width: "100%", background: "#111", color: "#fff", border: "1px solid #333", padding: ".6rem", borderRadius: "4px", fontSize: "16px" }}>
+                  {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
+              <button 
+                onClick={() => fetchData()} 
+                style={{ alignSelf: "flex-end", background: "rgba(255,255,255,0.05)", border: "1px solid #333", color: "#fff", padding: ".6rem", borderRadius: "4px", fontSize: ".7rem", cursor: "pointer" }}
+              >
+                ↻
+              </button>
            </div>
-           <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+           <div style={{ maxHeight: "500px", overflowY: "auto", position: "relative" }}>
+              {loading && activeTab === 'history' && (
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10 }}>
+                  <span style={{ fontSize: ".7rem", color: "var(--teal-glow)" }}>Updating Data...</span>
+                </div>
+              )}
               {dailyStats.map(day => (
                 <div key={day.date} className="history-row" onClick={() => setExpandedDate(expandedDate === day.date ? null : day.date)} style={{ background: "rgba(255,255,255,0.03)", padding: ".8rem", borderRadius: "6px", marginBottom: ".5rem", borderLeft: "3px solid var(--teal-glow)", cursor: "pointer" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".5rem" }}>
@@ -356,6 +373,59 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
         .stat-card .value { font-size: 1.5rem; font-weight: 800; color: var(--teal-glow); }
         .input-group label { display: block; font-size: .65rem; color: #888; margin-bottom: .3rem; }
         .history-row:hover { background: rgba(255,255,255,0.06) !important; }
+
+        .inv-btn {
+          background: var(--teal-glow);
+          color: #000;
+          border: none;
+          border-radius: 6px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 44px;
+        }
+        .inv-btn.del {
+          background: rgba(255,255,255,0.05);
+          color: #fff;
+          border: 1px solid rgba(255,255,255,0.1);
+        }
+        .inv-btn:active {
+          transform: scale(0.95);
+        }
+
+        .inv-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: .75rem;
+        }
+        .inv-table th {
+          text-align: left;
+          padding: .8rem;
+          background: rgba(255,255,255,0.03);
+          color: #888;
+          font-weight: 600;
+          text-transform: uppercase;
+          font-size: .6rem;
+          letter-spacing: 1px;
+        }
+        .inv-table td {
+          padding: .8rem;
+          border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        
+        input, select {
+          -webkit-appearance: none;
+          appearance: none;
+        }
+
+        @media (max-width: 768px) {
+          .inv-table { font-size: .7rem; }
+          .inv-table th, .inv-table td { padding: .6rem; }
+          .owner-card { padding: 1rem !important; }
+        }
       `}</style>
     </div>
   );
