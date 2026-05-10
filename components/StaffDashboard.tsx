@@ -6,6 +6,7 @@ import { SPEC_DB } from "@/lib/specDb";
 import { recordAttendance, getAttendanceHistory, getShopLocation } from "@/lib/supabase";
 
 const StaffMap = dynamic(() => import('./StaffMap'), { ssr: false });
+import InventorySystem from "./InventorySystem";
 
 interface StaffDashboardProps {
   showToast: (msg: string) => void;
@@ -398,6 +399,8 @@ export default function StaffDashboard({ showToast, userId }: StaffDashboardProp
         </table>
       </div>
 
+
+      {userId && <InventorySystem user={{ id: userId }} showToast={showToast} />}
     </div>
   );
 }

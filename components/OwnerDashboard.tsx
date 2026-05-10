@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { getPendingStaff, getAllStaff, approveStaff, rejectStaff, getTodayAllAttendance, getShopLocation, updateShopLocation, type Profile } from "@/lib/supabase";
 
 const StaffTrackerMap = dynamic(() => import('./StaffTrackerMap'), { ssr: false });
+import InventorySystem from "./InventorySystem";
 
 const PRODUCTS_DATA = [
   { id: 1, brand: "Apple", name: "iPhone 16 Pro", price: "₹1,34,900", stock: 5 },
@@ -24,9 +25,10 @@ import { SPEC_DB } from "@/lib/specDb";
 
 interface OwnerDashboardProps {
   showToast: (msg: string) => void;
+  user: any;
 }
 
-export default function OwnerDashboard({ showToast }: OwnerDashboardProps) {
+export default function OwnerDashboard({ showToast, user }: OwnerDashboardProps) {
   const [inventory, setInventory] = useState(PRODUCTS_DATA);
   const [clock, setClock] = useState("");
   const [scraperInput, setScraperInput] = useState("");
@@ -432,6 +434,7 @@ export default function OwnerDashboard({ showToast }: OwnerDashboardProps) {
         </table>
       </div>
 
+      <InventorySystem user={user} showToast={showToast} />
     </div>
   );
 }

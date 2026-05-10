@@ -160,7 +160,7 @@ export default function Page() {
       {/* Protected: Owner Dashboard */}
       {profile && profile.role === "owner" && (
         <div className={`page ${activePage === "owner" ? "active" : ""}`}>
-          <OwnerDashboard showToast={showToast} />
+          <OwnerDashboard showToast={showToast} user={profile} />
         </div>
       )}
 

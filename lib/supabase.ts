@@ -210,3 +210,107 @@ export async function updateShopLocation(lat: number, lng: number) {
     
   return { error };
 }
+
+// --- INVENTORY SYSTEM ---
+
+export interface InventoryItem {
+  id: string;
+  brand: string;
+  model: string;
+  imei: string | null;
+  quantity: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InventoryLog {
+  id: string;
+  product_id: string;
+  type: 'SALE' | 'NEW_STOCK' | 'RETURN';
+  quantity: number;
+  date: string;
+  created_at: string;
+  staff_id: string;
+  inventory?: {
+    brand: string;
+    model: string;
+  }
+}
+
+export async function getInventory(): Promise<InventoryItem[]> {
+  const { data } = await supabase
+    .from('inventory')
+    .select('*')
+    .order('brand', { ascending: true });
+  return data || [];
+}
+
+export async function addInventoryTransaction(
+  item: { brand: string, model: string, imei?: string },
+  type: 'SALE' | 'NEW_STOCK' | 'RETURN',
+  quantity: number,
+  date: string,
+  staffId: string
+) {
+  // 1. Find or create the product
+  let productId: string;
+  const { data: existing } = await supabase
+    .from('inventory')
+    .select('id, quantity')
+    .eq('brand', item.brand)
+    .eq('model', item.model)
+    .maybeSingle();
+
+  if (existing) {
+    productId = existing.id;
+    // Update quantity
+    let newQty = existing.quantity;
+    if (type === 'SALE' || type === 'RETURN') newQty -= quantity; 
+    if (type === 'NEW_STOCK') newQty += quantity;
+    
+    await supabase.from('inventory').update({ quantity: newQty, updated_at: new Date().toISOString() }).eq('id', productId);
+  } else {
+    const { data: created } = await supabase
+      .from('inventory')
+      .insert([{ brand: item.brand, model: item.model, imei: item.imei, quantity: type === 'NEW_STOCK' ? quantity : -quantity }])
+      .select()
+      .single();
+    productId = created!.id;
+  }
+
+  // 2. Log the transaction
+  const { error } = await supabase
+    .from('inventory_logs')
+    .insert([{ product_id: productId, type, quantity, date, staff_id: staffId }]);
+
+  return { error };
+}
+
+export async function getInventoryLogs(startDate: string, endDate: string): Promise<InventoryLog[]> {
+  const { data } = await supabase
+    .from('inventory_logs')
+    .select('*, inventory(brand, model)')
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('created_at', { ascending: false });
+    
+  return (data as any) || [];
+}
+
+export async function getOpeningStock(date: string): Promise<number> {
+  // Opening stock on Date D = Current Stock - (Sum of Transactions on and after D)
+  // This is a bit complex. Simpler way: 
+  // Sum all transactions before Date D.
+  const { data } = await supabase
+    .from('inventory_logs')
+    .select('type, quantity')
+    .lt('date', date);
+    
+  let total = 0;
+  data?.forEach(log => {
+    if (log.type === 'NEW_STOCK') total += log.quantity;
+    else total -= log.quantity;
+  });
+  
+  return total;
+}
