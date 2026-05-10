@@ -170,8 +170,9 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
       marginTop: "1rem", 
       minHeight: "500px",
       position: "relative",
-      zIndex: 50,
-      pointerEvents: "auto"
+      zIndex: 9999,
+      pointerEvents: "auto",
+      overflow: "visible"
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
         <h3 style={{ margin: 0 }}>Inventory System</h3>
@@ -377,20 +378,16 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
         .stat-card { background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
         .stat-card label { display: block; font-size: .6rem; color: #888; text-transform: uppercase; margin-bottom: .2rem; }
         .stat-card .value { font-size: 1.5rem; font-weight: 800; color: var(--teal-glow); }
-        .input-group label { display: block; font-size: .65rem; color: #888; margin-bottom: .3rem; }
+        .input-group label { display: block; font-size: .65rem; color: #888; margin-bottom: .3rem; pointer-events: none; }
         .history-row:hover { background: rgba(255,255,255,0.06) !important; }
 
-        .inventory-root input, 
-        .inventory-root select, 
-        .inventory-root button {
+        .inventory-root * {
           pointer-events: auto !important;
-          position: relative;
-          z-index: 60;
         }
 
         .inv-btn {
-          background: var(--teal-glow);
-          color: #000;
+          background: var(--teal-glow) !important;
+          color: #000 !important;
           border: none;
           border-radius: 6px;
           font-weight: 700;
@@ -399,16 +396,15 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
           display: flex;
           align-items: center;
           justify-content: center;
-          min-height: 48px;
+          min-height: 50px;
           width: 100%;
+          position: relative;
+          z-index: 10001;
         }
         .inv-btn.del {
-          background: rgba(255,255,255,0.05);
-          color: #fff;
-          border: 1px solid rgba(255,255,255,0.1);
-        }
-        .inv-btn:active {
-          transform: scale(0.95);
+          background: rgba(255,255,255,0.05) !important;
+          color: #fff !important;
+          border: 1px solid rgba(255,255,255,0.1) !important;
         }
 
         .inv-table {
@@ -432,28 +428,23 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
         }
         
         .input-group input, .input-group select {
-          width: 100%;
-          background: #111;
-          color: #fff;
-          border: 1px solid #333;
-          padding: .8rem;
-          border-radius: 8px;
-          font-size: 16px;
-          outline: none;
-        }
-        .input-group input:focus {
-          border-color: var(--teal-glow);
-        }
-
-        input, select {
-          -webkit-user-select: auto !important;
-          user-select: auto !important;
+          width: 100% !important;
+          background: #111 !important;
+          color: #fff !important;
+          border: 1px solid #333 !important;
+          padding: .8rem !important;
+          border-radius: 8px !important;
+          font-size: 16px !important;
+          height: 50px !important;
+          outline: none !important;
+          position: relative;
+          z-index: 10001;
         }
 
         @media (max-width: 768px) {
           .inv-table { font-size: .7rem; }
           .inv-table th, .inv-table td { padding: .6rem; }
-          .owner-card { padding: 1rem !important; }
+          .owner-card { padding: 1rem !important; margin-bottom: 2rem; }
           .stat-card { padding: .8rem; }
         }
       `}</style>
