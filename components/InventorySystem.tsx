@@ -28,6 +28,7 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
   const [historyMonth, setHistoryMonth] = useState(new Date().getMonth());
   const [historyYear, setHistoryYear] = useState(new Date().getFullYear());
   const [dailyStats, setDailyStats] = useState<any[]>([]);
+  const [expandedDate, setExpandedDate] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -70,7 +71,8 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
         sales,
         newStock,
         returns,
-        closing: opening + newStock - sales - returns
+        closing: opening + newStock - sales - returns,
+        logs: dayLogs
       });
     }
     setDailyStats(stats.reverse());
@@ -266,16 +268,23 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
 
            <div style={{ maxHeight: "400px", overflowY: "auto" }}>
               {dailyStats.map(day => (
-                <div key={day.date} style={{ 
-                  background: "rgba(255,255,255,0.03)", 
-                  padding: ".8rem", 
-                  borderRadius: "6px", 
-                  marginBottom: ".5rem",
-                  borderLeft: "3px solid var(--teal-glow)"
-                }}>
+                <div 
+                  key={day.date} 
+                  onClick={() => setExpandedDate(expandedDate === day.date ? null : day.date)}
+                  style={{ 
+                    background: "rgba(255,255,255,0.03)", 
+                    padding: ".8rem", 
+                    borderRadius: "6px", 
+                    marginBottom: ".5rem",
+                    borderLeft: "3px solid var(--teal-glow)",
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                  className="history-row"
+                >
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".5rem" }}>
                     <span style={{ fontSize: ".75rem", fontWeight: 700 }}>{new Date(day.date).toLocaleDateString('en-IN', {day: 'numeric', month: 'short'})}</span>
-                    <span style={{ fontSize: ".6rem", color: "#888" }}>Status: {day.sales > 0 ? 'Busy' : 'Quiet'}</span>
+                    <span style={{ fontSize: ".6rem", color: "#888" }}>{expandedDate === day.date ? '▲ Close' : '▼ Details'}</span>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".5rem", textAlign: "center" }}>
                     <div>
@@ -295,6 +304,35 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
                       <div style={{ fontSize: ".8rem", fontWeight: 700 }}>{day.closing}</div>
                     </div>
                   </div>
+
+                  {expandedDate === day.date && (
+                    <div style={{ marginTop: "1rem", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.8rem" }}>
+                      <div style={{ fontSize: ".6rem", color: "var(--teal-glow)", fontWeight: 700, marginBottom: ".4rem", letterSpacing: "1px" }}>TRANSACTION DETAILS</div>
+                      {day.logs.map((log: any) => (
+                        <div key={log.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: ".68rem", padding: ".5rem", background: "rgba(255,255,255,0.02)", borderRadius: "4px", marginBottom: ".3rem" }}>
+                           <div style={{ display: "flex", flexDirection: "column" }}>
+                             <span style={{ fontWeight: 700 }}>{log.inventory?.brand} {log.inventory?.model}</span>
+                             <span style={{ fontSize: ".55rem", color: "#666" }}>{new Date(log.created_at).toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'})}</span>
+                           </div>
+                           <div style={{ textAlign: "right" }}>
+                             <span style={{ 
+                               fontSize: ".6rem", 
+                               padding: "2px 6px", 
+                               borderRadius: "2px",
+                               background: log.type === 'SALE' ? 'rgba(239,68,68,0.1)' : (log.type === 'NEW_STOCK' ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)'),
+                               color: log.type === 'SALE' ? '#ef4444' : (log.type === 'NEW_STOCK' ? '#10b981' : '#f59e0b'),
+                               fontWeight: "bold",
+                               marginRight: ".5rem"
+                             }}>
+                               {log.type}
+                             </span>
+                             <span style={{ fontWeight: 700 }}>{log.quantity}</span>
+                           </div>
+                        </div>
+                      ))}
+                      {day.logs.length === 0 && <p style={{ fontSize: ".65rem", color: "#555", textAlign: "center" }}>No detailed logs for this day</p>}
+                    </div>
+                  )}
                 </div>
               ))}
            </div>
@@ -326,6 +364,9 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
           font-size: .65rem;
           color: #888;
           margin-bottom: .3rem;
+        }
+        .history-row:hover {
+          background: rgba(255,255,255,0.06) !important;
         }
       `}</style>
     </div>
