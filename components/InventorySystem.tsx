@@ -166,7 +166,13 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
   const totalStock = inventory.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="owner-card" style={{ marginTop: "1rem", minHeight: "500px" }}>
+    <div className="owner-card inventory-root" style={{ 
+      marginTop: "1rem", 
+      minHeight: "500px",
+      position: "relative",
+      zIndex: 50,
+      pointerEvents: "auto"
+    }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
         <h3 style={{ margin: 0 }}>Inventory System</h3>
         <div style={{ background: "rgba(45, 212, 191, 0.1)", padding: ".4rem .8rem", borderRadius: "4px", fontSize: ".7rem", color: "#2DD4BF", fontWeight: 700 }}>
@@ -374,6 +380,14 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
         .input-group label { display: block; font-size: .65rem; color: #888; margin-bottom: .3rem; }
         .history-row:hover { background: rgba(255,255,255,0.06) !important; }
 
+        .inventory-root input, 
+        .inventory-root select, 
+        .inventory-root button {
+          pointer-events: auto !important;
+          position: relative;
+          z-index: 60;
+        }
+
         .inv-btn {
           background: var(--teal-glow);
           color: #000;
@@ -385,7 +399,8 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
           display: flex;
           align-items: center;
           justify-content: center;
-          min-height: 44px;
+          min-height: 48px;
+          width: 100%;
         }
         .inv-btn.del {
           background: rgba(255,255,255,0.05);
@@ -416,15 +431,27 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
           border-bottom: 1px solid rgba(255,255,255,0.03);
         }
         
-        input, select {
+        .input-group input, .input-group select {
+          width: 100%;
+          background: #111;
+          color: #fff;
+          border: 1px solid #333;
+          padding: .8rem;
+          border-radius: 8px;
+          font-size: 16px;
+          outline: none;
           -webkit-appearance: none;
           appearance: none;
+        }
+        .input-group input:focus {
+          border-color: var(--teal-glow);
         }
 
         @media (max-width: 768px) {
           .inv-table { font-size: .7rem; }
           .inv-table th, .inv-table td { padding: .6rem; }
           .owner-card { padding: 1rem !important; }
+          .stat-card { padding: .8rem; }
         }
       `}</style>
     </div>
