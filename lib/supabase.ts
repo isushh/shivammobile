@@ -230,19 +230,39 @@ export interface InventoryLog {
   quantity: number;
   date: string;
   created_at: string;
+  updated_at?: string;
   staff_id: string;
+  last_edited_by?: string;
+  is_deleted?: boolean;
+  deleted_by?: string;
+  deleted_at?: string;
   inventory?: {
     brand: string;
     model: string;
-  }
+  };
+  profiles?: { full_name: string };
+  editor?: { full_name: string };
+  remover?: { full_name: string };
 }
 
 export async function getInventory(): Promise<InventoryItem[]> {
   const { data } = await supabase
     .from('inventory')
-    .select('*')
+    .select('*, profiles:last_edited_by(full_name)')
     .order('brand', { ascending: true });
-  return data || [];
+  return (data as any) || [];
+}
+
+export async function updateProductStockManual(productId: string, newQuantity: number, userId: string) {
+  const { error } = await supabase
+    .from('inventory')
+    .update({ 
+      quantity: newQuantity, 
+      last_edited_by: userId, 
+      updated_at: new Date().toISOString() 
+    })
+    .eq('id', productId);
+  return { error };
 }
 
 export async function addInventoryTransaction(
@@ -252,7 +272,6 @@ export async function addInventoryTransaction(
   date: string,
   staffId: string
 ) {
-  // 1. Find or create the product
   let productId: string;
   const { data: existing } = await supabase
     .from('inventory')
@@ -263,11 +282,9 @@ export async function addInventoryTransaction(
 
   if (existing) {
     productId = existing.id;
-    // Update quantity
     let newQty = existing.quantity;
     if (type === 'SALE' || type === 'RETURN') newQty -= quantity; 
     if (type === 'NEW_STOCK') newQty += quantity;
-    
     await supabase.from('inventory').update({ quantity: newQty, updated_at: new Date().toISOString() }).eq('id', productId);
   } else {
     const { data: created } = await supabase
@@ -278,7 +295,6 @@ export async function addInventoryTransaction(
     productId = created!.id;
   }
 
-  // 2. Log the transaction
   const { error } = await supabase
     .from('inventory_logs')
     .insert([{ product_id: productId, type, quantity, date, staff_id: staffId }]);
@@ -286,24 +302,92 @@ export async function addInventoryTransaction(
   return { error };
 }
 
-export async function getInventoryLogs(startDate: string, endDate: string): Promise<InventoryLog[]> {
-  const { data } = await supabase
+export async function getInventoryLogs(startDate: string, endDate: string, includeDeleted = false): Promise<InventoryLog[]> {
+  let query = supabase
     .from('inventory_logs')
-    .select('*, inventory(brand, model)')
-    .gte('date', startDate)
-    .lte('date', endDate)
+    .select(`
+      *, 
+      inventory(brand, model),
+      profiles:staff_id(full_name),
+      editor:last_edited_by(full_name),
+      remover:deleted_by(full_name)
+    `)
     .order('created_at', { ascending: false });
+
+  if (startDate === endDate) {
+    query = query.eq('date', startDate);
+  } else {
+    query = query.gte('date', startDate).lte('date', endDate);
+  }
+
+  if (!includeDeleted) {
+    query = query.eq('is_deleted', false);
+  } else {
+    query = query.eq('is_deleted', true);
+  }
     
+  const { data } = await query;
   return (data as any) || [];
 }
 
+export async function updateInventoryLog(logId: string, newQty: number, userId: string) {
+  const { data: oldLog } = await supabase.from('inventory_logs').select('*').eq('id', logId).single();
+  if (!oldLog) return { error: { message: 'Log not found' } };
+
+  const delta = newQty - oldLog.quantity;
+  const { data: inv } = await supabase.from('inventory').select('quantity').eq('id', oldLog.product_id).single();
+  
+  let invDelta = 0;
+  if (oldLog.type === 'SALE' || oldLog.type === 'RETURN') invDelta = -delta;
+  else if (oldLog.type === 'NEW_STOCK') invDelta = delta;
+
+  const { error: invErr } = await supabase.from('inventory')
+    .update({ quantity: (inv?.quantity || 0) + invDelta, updated_at: new Date().toISOString() })
+    .eq('id', oldLog.product_id);
+
+  if (invErr) return { error: invErr };
+
+  const { error } = await supabase.from('inventory_logs')
+    .update({ 
+      quantity: newQty, 
+      last_edited_by: userId, 
+      updated_at: new Date().toISOString() 
+    })
+    .eq('id', logId);
+
+  return { error };
+}
+
+export async function deleteInventoryLog(logId: string, userId: string) {
+  const { data: log } = await supabase.from('inventory_logs').select('*').eq('id', logId).single();
+  if (!log) return { error: { message: 'Log not found' } };
+
+  // Reverse inventory quantity
+  const { data: inv } = await supabase.from('inventory').select('quantity').eq('id', log.product_id).single();
+  let reverseDelta = 0;
+  if (log.type === 'SALE' || log.type === 'RETURN') reverseDelta = log.quantity;
+  else if (log.type === 'NEW_STOCK') reverseDelta = -log.quantity;
+
+  await supabase.from('inventory')
+    .update({ quantity: (inv?.quantity || 0) + reverseDelta, updated_at: new Date().toISOString() })
+    .eq('id', log.product_id);
+
+  const { error } = await supabase.from('inventory_logs')
+    .update({ 
+      is_deleted: true, 
+      deleted_by: userId, 
+      deleted_at: new Date().toISOString() 
+    })
+    .eq('id', logId);
+
+  return { error };
+}
+
 export async function getOpeningStock(date: string): Promise<number> {
-  // Opening stock on Date D = Current Stock - (Sum of Transactions on and after D)
-  // This is a bit complex. Simpler way: 
-  // Sum all transactions before Date D.
   const { data } = await supabase
     .from('inventory_logs')
     .select('type, quantity')
+    .eq('is_deleted', false)
     .lt('date', date);
     
   let total = 0;
