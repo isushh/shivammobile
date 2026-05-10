@@ -440,11 +440,14 @@ export default function InventorySystem({ user, showToast }: InventorySystemProp
           border-radius: 8px;
           font-size: 16px;
           outline: none;
-          -webkit-appearance: none;
-          appearance: none;
         }
         .input-group input:focus {
           border-color: var(--teal-glow);
+        }
+
+        input, select {
+          -webkit-user-select: auto !important;
+          user-select: auto !important;
         }
 
         @media (max-width: 768px) {
