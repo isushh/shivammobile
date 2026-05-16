@@ -125,10 +125,7 @@ export async function getAllStaff(): Promise<Profile[]> {
 
 // Approve a staff member (owner only)
 export async function approveStaff(staffId: string) {
-  const { error } = await supabase
-    .from('profiles')
-    .update({ is_approved: true, updated_at: new Date().toISOString() })
-    .eq('id', staffId);
+  const { error } = await supabase.rpc('approve_and_confirm_staff', { staff_profile_id: staffId });
 
   return { error };
 }

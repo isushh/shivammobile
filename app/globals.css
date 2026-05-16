@@ -36,6 +36,10 @@
 
 html { scroll-behavior: smooth; }
 
+button, a, input, select {
+  touch-action: manipulation;
+}
+
 body {
   font-family: 'Montserrat', sans-serif;
   background: var(--bg);
@@ -884,8 +888,10 @@ video, canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
 .punch-btn {
   padding: .75rem 2rem; border: none; border-radius: 2px;
   font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .82rem;
-  cursor: pointer; transition: all .3s; letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; transition: all .2s; letter-spacing: 1px; text-transform: uppercase;
+  touch-action: manipulation;
 }
+.punch-btn:active { transform: scale(0.95) !important; opacity: 0.8; }
 .punch-in { background: var(--teal); color: #fff; }
 .punch-in:hover { background: var(--teal-glow); transform: scale(1.03); }
 .punch-out { background: var(--card); border: 1px solid var(--teal); color: var(--teal); }
@@ -933,7 +939,9 @@ video, canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
   padding: .18rem .5rem; font-size: .62rem; border-radius: 2px; cursor: pointer;
   font-family: 'Montserrat', sans-serif; font-weight: 700; transition: all .2s;
   pointer-events: auto; position: relative; z-index: 20;
+  touch-action: manipulation;
 }
+.inv-btn:active { transform: scale(0.95) !important; opacity: 0.8; }
 .inv-btn:hover { background: rgba(45,212,191,.1); }
 .inv-btn.del { border-color: rgba(248,113,113,.3); color: #f87171; }
 .inv-btn.del:hover { background: rgba(248,113,113,.08); }
