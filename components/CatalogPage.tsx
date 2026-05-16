@@ -1,33 +1,59 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
-import { type Product } from "@/lib/supabase";
+import { useState, useEffect } from "react";
+import { getPhones, type Phone } from "@/lib/phones";
 
-const PRODUCTS: Product[] = [
-  { id: 1, brand: "Apple", name: "iPhone 16 Pro", price: "₹1,34,900", emi: true, ram: "8 GB", storage: "256 GB", camera: "48 MP Fusion", display: '6.3" Super Retina XDR OLED', battery: "3274 mAh", os: "iOS 18", color: "Natural Titanium" },
-  { id: 2, brand: "Apple", name: "iPhone 15", price: "₹74,900", emi: true, ram: "6 GB", storage: "128 GB", camera: "48 MP", display: '6.1" Super Retina XDR OLED', battery: "3349 mAh", os: "iOS 17", color: "Pink" },
-  { id: 3, brand: "Apple", name: "iPhone 14", price: "₹59,900", emi: true, ram: "6 GB", storage: "128 GB", camera: "12 MP Dual", display: '6.1" Super Retina XDR', battery: "3279 mAh", os: "iOS 16", color: "Midnight" },
-  { id: 4, brand: "Samsung", name: "Galaxy S24 Ultra", price: "₹1,29,999", emi: true, ram: "12 GB", storage: "256 GB", camera: "200 MP Quad", display: '6.8" QHD+ AMOLED 120Hz', battery: "5000 mAh", os: "Android 14", color: "Titanium Black" },
-  { id: 5, brand: "Samsung", name: "Galaxy A55", price: "₹37,999", emi: true, ram: "8 GB", storage: "128 GB", camera: "50 MP Triple", display: '6.6" FHD+ AMOLED 120Hz', battery: "5000 mAh", os: "Android 14", color: "Awesome Navy" },
-  { id: 6, brand: "Samsung", name: "Galaxy M55", price: "₹24,999", emi: false, ram: "8 GB", storage: "128 GB", camera: "50 MP", display: '6.7" FHD+ AMOLED', battery: "6000 mAh", os: "Android 14", color: "Emerald Brown" },
-  { id: 7, brand: "Vivo", name: "Vivo V30 Pro", price: "₹44,999", emi: true, ram: "12 GB", storage: "256 GB", camera: "50 MP ZEISS", display: '6.78" AMOLED 120Hz', battery: "5000 mAh", os: "Android 14", color: "Peacock Green" },
-  { id: 8, brand: "Vivo", name: "Vivo T3x 5G", price: "₹12,999", emi: false, ram: "4 GB", storage: "128 GB", camera: "50 MP", display: '6.72" IPS LCD', battery: "6000 mAh", os: "Android 14", color: "Crimson Bliss" },
-  { id: 9, brand: "Sony", name: "Xperia 1 VI", price: "₹1,09,990", emi: true, ram: "12 GB", storage: "256 GB", camera: "52 MP Zeiss Triple", display: '6.5" 4K HDR OLED', battery: "5000 mAh", os: "Android 14", color: "Khaki" },
-  { id: 10, brand: "Xiaomi", name: "Xiaomi 14 Ultra", price: "₹99,999", emi: true, ram: "16 GB", storage: "512 GB", camera: "50 MP Leica Quad", display: '6.73" LTPO AMOLED', battery: "5000 mAh", os: "Android 14", color: "White" },
-  { id: 11, brand: "Xiaomi", name: "Redmi Note 13", price: "₹16,999", emi: false, ram: "6 GB", storage: "128 GB", camera: "108 MP", display: '6.67" AMOLED 120Hz', battery: "5000 mAh", os: "Android 13", color: "Arctic White" },
-];
+const BRAND_COLORS: Record<string, string> = {
+  Apple: "#5196CE",
+  Samsung: "#4aad8a",
+  OnePlus: "#df2531",
+  Vivo: "#b58863",
+  Xiaomi: "#c1d1cf",
+  OPPO: "#7b9fa6",
+  Google: "#5196CE",
+  Motorola: "#4aad8a",
+  Nothing: "#d8cfbc",
+  Realme: "#df8231",
+  iQOO: "#a77bd4",
+};
 
-const BRANDS = ["All", "Apple", "Samsung", "Vivo", "Sony", "Xiaomi"];
+function getBrandColor(brand: string) {
+  return BRAND_COLORS[brand] || "#5196CE";
+}
+
+function formatLaunchDate(dateStr: string | null): string {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function isNewLaunch(launchedAt: string | null): boolean {
+  if (!launchedAt) return false;
+  const days = (Date.now() - new Date(launchedAt).getTime()) / (1000 * 60 * 60 * 24);
+  return days <= 60;
+}
 
 interface CatalogPageProps {
   showToast: (msg: string) => void;
 }
 
 export default function CatalogPage({ showToast }: CatalogPageProps) {
+  const [phones, setPhones] = useState<Phone[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
-  const [modalProduct, setModalProduct] = useState<Product | null>(null);
+  const [sort, setSort] = useState<"popular" | "newest" | "price_asc" | "price_desc">("newest");
+  const [search, setSearch] = useState("");
+  const [modal, setModal] = useState<Phone | null>(null);
+  const [brands, setBrands] = useState<string[]>([]);
 
-  const filtered = filter === "All" ? PRODUCTS : PRODUCTS.filter((p) => p.brand === filter);
+  useEffect(() => {
+    getPhones().then(data => {
+      setPhones(data);
+      const b = [...new Set(data.map(p => p.brand))].sort();
+      setBrands(b);
+      setLoading(false);
+    });
+  }, []);
 
   const waLink = (model: string) => {
     const msg = `Hi Shivam Mobile Care, I am interested in the ${model}. Please share more details.`;
@@ -35,97 +61,225 @@ export default function CatalogPage({ showToast }: CatalogPageProps) {
     showToast("Opening WhatsApp inquiry...");
   };
 
+  const filtered = phones
+    .filter(p => filter === "All" || p.brand === filter)
+    .filter(p => {
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q);
+    })
+    .sort((a, b) => {
+      if (sort === "popular") return (a.bestseller_rank ?? 999) - (b.bestseller_rank ?? 999);
+      if (sort === "newest") return new Date(b.launched_at ?? 0).getTime() - new Date(a.launched_at ?? 0).getTime();
+      if (sort === "price_asc") return (a.price_numeric ?? 0) - (b.price_numeric ?? 0);
+      if (sort === "price_desc") return (b.price_numeric ?? 0) - (a.price_numeric ?? 0);
+      return 0;
+    });
+
+  const newLaunches = filtered.filter(p => isNewLaunch(p.launched_at));
+  const rest = filtered.filter(p => !isNewLaunch(p.launched_at));
+
   return (
     <>
       <div className="section">
         <div className="section-header">
-          <h2>Product Catalog</h2>
-          <p>All phones available at 0% EMI. Tap any card for full specs &amp; WhatsApp inquiry.</p>
+          <h2>Latest Smartphones</h2>
+          <p>Live data from Indian market · Auto-updated daily · Tap any card to inquire</p>
         </div>
 
-        <div className="filter-bar">
-          {BRANDS.map((brand) => (
+        {/* Search */}
+        <div style={{ marginBottom: "1rem" }}>
+          <input
+            type="text"
+            placeholder="🔍 Search phones..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              width: "100%", background: "rgba(6,57,47,0.15)",
+              border: "1px solid rgba(216,207,188,0.15)", borderRadius: "10px",
+              padding: ".75rem 1rem", color: "#d8cfbc", fontSize: "1rem", outline: "none"
+            }}
+          />
+        </div>
+
+        {/* Brand filter */}
+        <div className="filter-bar" style={{ marginBottom: ".8rem" }}>
+          {["All", ...brands].map(brand => (
             <button
               key={brand}
               className={`filter-chip ${filter === brand ? "active" : ""}`}
               onClick={() => setFilter(brand)}
+              style={filter === brand ? { background: getBrandColor(brand), borderColor: getBrandColor(brand), color: "#fff" } : {}}
             >
               {brand}
             </button>
           ))}
         </div>
 
-        <div className="catalog-grid">
-          {filtered.map((p, i) => (
-            <div
-              key={p.id}
-              className="prod-card"
-              style={{ animationDelay: `${i * 0.05}s` }}
-              onClick={() => setModalProduct(p)}
+        {/* Sort */}
+        <div style={{ display: "flex", gap: ".5rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+          {([["newest", "🆕 Newest"], ["popular", "🔥 Popular"], ["price_asc", "₹ Low→High"], ["price_desc", "₹ High→Low"]] as const).map(([val, label]) => (
+            <button
+              key={val}
+              onClick={() => setSort(val)}
+              style={{
+                padding: ".35rem .8rem", fontSize: ".7rem", fontWeight: 700,
+                borderRadius: "6px", cursor: "pointer", border: "1px solid",
+                background: sort === val ? "#5196CE" : "transparent",
+                color: sort === val ? "#fff" : "#9a9387",
+                borderColor: sort === val ? "#5196CE" : "rgba(216,207,188,0.12)",
+                transition: "all .2s"
+              }}
             >
-              {p.emi && <div className="emi-badge">✦ Available @ 0% EMI</div>}
-              <div className="prod-brand">{p.brand}</div>
-              <div className="prod-name">{p.name}</div>
-              <div className="prod-specs">
-                {p.ram} RAM · {p.storage} · {p.camera}
-              </div>
-              <div className="prod-price">{p.price}</div>
-              <button
-                className="wa-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  waLink(p.name);
-                }}
-              >
-                💬 Inquire on WhatsApp
-              </button>
-            </div>
+              {label}
+            </button>
           ))}
         </div>
+
+        {loading && (
+          <div style={{ textAlign: "center", padding: "3rem", color: "#9a9387" }}>
+            <div style={{ fontSize: "2rem", marginBottom: ".5rem" }}>📱</div>
+            <p>Loading latest phones...</p>
+          </div>
+        )}
+
+        {!loading && filtered.length === 0 && (
+          <div style={{ textAlign: "center", padding: "3rem", color: "#9a9387" }}>
+            <p>No phones found for this filter.</p>
+          </div>
+        )}
+
+        {/* New Launches Section */}
+        {!loading && newLaunches.length > 0 && (
+          <>
+            <div style={{ display: "flex", alignItems: "center", gap: ".8rem", marginBottom: "1rem" }}>
+              <span style={{ fontSize: ".65rem", fontWeight: 800, color: "#df2531", letterSpacing: "2px", textTransform: "uppercase" }}>🔴 New Launches</span>
+              <div style={{ flex: 1, height: "1px", background: "rgba(223,37,49,0.2)" }} />
+              <span style={{ fontSize: ".6rem", color: "#9a9387" }}>{newLaunches.length} phones</span>
+            </div>
+            <div className="catalog-grid" style={{ marginBottom: "2rem" }}>
+              {newLaunches.map((p, i) => (
+                <PhoneCard key={p.id} phone={p} delay={i * 0.04} onClick={() => setModal(p)} onWa={() => waLink(p.name)} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* All Other Phones */}
+        {!loading && rest.length > 0 && (
+          <>
+            {newLaunches.length > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: ".8rem", marginBottom: "1rem" }}>
+                <span style={{ fontSize: ".65rem", fontWeight: 800, color: "#5196CE", letterSpacing: "2px", textTransform: "uppercase" }}>📱 All Phones</span>
+                <div style={{ flex: 1, height: "1px", background: "rgba(81,150,206,0.2)" }} />
+              </div>
+            )}
+            <div className="catalog-grid">
+              {rest.map((p, i) => (
+                <PhoneCard key={p.id} phone={p} delay={i * 0.04} onClick={() => setModal(p)} onWa={() => waLink(p.name)} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Product Modal */}
+      {/* Modal */}
       <div
-        className={`modal-overlay ${modalProduct ? "open" : ""}`}
-        onClick={(e) => {
-          if ((e.target as HTMLElement).classList.contains("modal-overlay")) {
-            setModalProduct(null);
-          }
-        }}
+        className={`modal-overlay ${modal ? "open" : ""}`}
+        onClick={e => { if ((e.target as HTMLElement).classList.contains("modal-overlay")) setModal(null); }}
       >
-        {modalProduct && (
+        {modal && (
           <div className="modal-box">
-            <div className="prod-brand" style={{ color: "var(--teal)", fontSize: ".68rem", letterSpacing: "2.5px" }}>
-              {modalProduct.brand}
+            {isNewLaunch(modal.launched_at) && (
+              <div style={{ fontSize: ".6rem", fontWeight: 800, color: "#df2531", letterSpacing: "2px", marginBottom: ".4rem" }}>🔴 NEW LAUNCH</div>
+            )}
+            <div style={{ fontSize: ".65rem", fontWeight: 800, color: getBrandColor(modal.brand), letterSpacing: "2.5px", textTransform: "uppercase", marginBottom: ".3rem" }}>
+              {modal.brand}
             </div>
-            <h2>{modalProduct.name}</h2>
-            <div style={{ color: "var(--teal)", fontWeight: 900, fontSize: "1.5rem", margin: ".3rem 0", letterSpacing: "-1px" }}>
-              {modalProduct.price}
-            </div>
-            {modalProduct.emi && <div className="emi-badge" style={{ fontSize: ".72rem" }}>✦ 0% EMI Available</div>}
+            <h2 style={{ margin: "0 0 .5rem" }}>{modal.name}</h2>
+            {modal.price && (
+              <div style={{ color: "#b58863", fontWeight: 900, fontSize: "1.5rem", margin: ".3rem 0", letterSpacing: "-1px" }}>
+                {modal.price}
+              </div>
+            )}
+            {modal.emi && <div className="emi-badge" style={{ fontSize: ".72rem" }}>✦ 0% EMI Available</div>}
 
             <table className="spec-table">
               <tbody>
-                <tr><td>RAM</td><td>{modalProduct.ram}</td></tr>
-                <tr><td>Storage</td><td>{modalProduct.storage}</td></tr>
-                <tr><td>Camera</td><td>{modalProduct.camera}</td></tr>
-                <tr><td>Display</td><td>{modalProduct.display}</td></tr>
-                <tr><td>Battery</td><td>{modalProduct.battery}</td></tr>
-                <tr><td>OS</td><td>{modalProduct.os}</td></tr>
-                <tr><td>Color</td><td>{modalProduct.color}</td></tr>
+                {modal.ram && <tr><td>RAM</td><td>{modal.ram}</td></tr>}
+                {modal.storage && <tr><td>Storage</td><td>{modal.storage}</td></tr>}
+                {modal.camera && <tr><td>Camera</td><td>{modal.camera}</td></tr>}
+                {modal.display && <tr><td>Display</td><td>{modal.display}</td></tr>}
+                {modal.battery && <tr><td>Battery</td><td>{modal.battery}</td></tr>}
+                {modal.os && <tr><td>OS</td><td>{modal.os}</td></tr>}
+                {modal.color && <tr><td>Color</td><td>{modal.color}</td></tr>}
+                {modal.launched_at && <tr><td>Launched</td><td>{formatLaunchDate(modal.launched_at)}</td></tr>}
               </tbody>
             </table>
 
-            <button className="wa-btn" onClick={() => waLink(modalProduct.name)}>
+            {modal.source_url && (
+              <a href={modal.source_url} target="_blank" rel="noopener noreferrer"
+                style={{ display: "block", fontSize: ".65rem", color: "#5196CE", marginBottom: ".8rem", textDecoration: "none" }}>
+                🔗 View full specs on MySmartPrice →
+              </a>
+            )}
+
+            <button className="wa-btn" onClick={() => waLink(modal.name)}>
               💬 Inquire on WhatsApp
             </button>
             <br />
-            <button className="close-btn" onClick={() => setModalProduct(null)}>
-              ✕ Close
-            </button>
+            <button className="close-btn" onClick={() => setModal(null)}>✕ Close</button>
           </div>
         )}
       </div>
     </>
+  );
+}
+
+function PhoneCard({ phone, delay, onClick, onWa }: {
+  phone: Phone; delay: number;
+  onClick: () => void; onWa: () => void;
+}) {
+  const brandColor = getBrandColor(phone.brand);
+  const isNew = isNewLaunch(phone.launched_at);
+
+  return (
+    <div
+      className="prod-card"
+      style={{ animationDelay: `${delay}s`, position: "relative", overflow: "hidden" }}
+      onClick={onClick}
+    >
+      {isNew && (
+        <div style={{
+          position: "absolute", top: 0, right: 0,
+          background: "#df2531", color: "#fff",
+          fontSize: ".5rem", fontWeight: 900, padding: ".2rem .5rem",
+          borderBottomLeftRadius: "6px", letterSpacing: "1px"
+        }}>NEW</div>
+      )}
+      {phone.emi && <div className="emi-badge">✦ 0% EMI</div>}
+      <div style={{ fontSize: ".6rem", fontWeight: 800, color: brandColor, letterSpacing: "2px", textTransform: "uppercase", marginBottom: ".3rem" }}>
+        {phone.brand}
+      </div>
+      <div className="prod-name">{phone.name}</div>
+      {(phone.ram || phone.camera) && (
+        <div className="prod-specs">
+          {[phone.ram, phone.storage, phone.camera].filter(Boolean).join(" · ")}
+        </div>
+      )}
+      {phone.price && <div className="prod-price">{phone.price}</div>}
+      {phone.launched_at && (
+        <div style={{ fontSize: ".58rem", color: "#9a9387", marginTop: ".3rem" }}>
+          Launched {formatLaunchDate(phone.launched_at)}
+        </div>
+      )}
+      <button
+        className="wa-btn"
+        onClick={e => { e.stopPropagation(); onWa(); }}
+        style={{ marginTop: ".8rem" }}
+      >
+        💬 Inquire on WhatsApp
+      </button>
+    </div>
   );
 }
