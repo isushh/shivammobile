@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
@@ -10,8 +10,11 @@ import Toast from "@/components/Toast";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { supabase, getProfile, type Profile, type UserRole } from "@/lib/supabase";
 
+import { Capacitor } from '@capacitor/core';
+
 export default function Page() {
   const [activePage, setActivePage] = useState("home");
+  const isNative = typeof window !== 'undefined' ? Capacitor.isNativePlatform() : false;
   const [toast, setToast] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,7 +40,7 @@ export default function Page() {
         } else if (p?.role === "staff") {
           setActivePage(targetPage === "catalog" || targetPage === "home" ? targetPage : "staff");
         } else {
-          setActivePage(targetPage || "home");
+          setActivePage(targetPage || (isNative ? "catalog" : "home"));
         }
       } else {
         if (!isMounted) return;
@@ -45,7 +48,7 @@ export default function Page() {
         if (targetPage && targetPage !== "owner" && targetPage !== "staff") {
           setActivePage(targetPage);
         } else {
-          setActivePage("home");
+          setActivePage(isNative ? "catalog" : "home");
         }
       }
     };
@@ -83,7 +86,7 @@ export default function Page() {
     // Handle scrolling for home sections
     if (page === "contact" || page === "about") {
       if (activePage !== "home") {
-        setActivePage("home");
+        setActivePage(isNative ? "catalog" : "home");
         // Wait for state change then scroll
         setTimeout(() => {
           const footer = document.querySelector('footer');
@@ -116,7 +119,7 @@ export default function Page() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setProfile(null);
-    setActivePage("home");
+    setActivePage(isNative ? "catalog" : "home");
     showToast("Logged out successfully");
   };
 
@@ -169,3 +172,4 @@ export default function Page() {
     </>
   );
 }
+
