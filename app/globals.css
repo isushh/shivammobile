@@ -1535,3 +1535,38 @@ footer {
     font-size: 14px;
   }
 }
+
+/* â”€â”€ CATALOG PAGE SPECS â”€â”€ */
+.prod-specs {
+  font-size: .65rem;
+  color: var(--subtext);
+  margin-top: .4rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: .75rem;
+}
+.spec-table td {
+  padding: .5rem 0;
+  border-bottom: 1px solid rgba(216,207,188,0.08);
+}
+.spec-table tr:last-child td {
+  border-bottom: none;
+}
+.spec-table td:first-child {
+  color: var(--subtext);
+  font-weight: 600;
+  width: 30%;
+}
+.spec-table td:last-child {
+  color: var(--text);
+  font-weight: 500;
+}
