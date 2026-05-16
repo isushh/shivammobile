@@ -422,8 +422,8 @@ nav.transparent-nav {
 .gradient-text {
   background: var(--gradient-text);
   -webkit-background-clip: text;
-  background-clip: text;`r`n  -webkit-text-fill-color: transparent;
   background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .gradient-border {
   position: relative;
