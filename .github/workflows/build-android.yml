@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
       - name: Sync Capacitor
         run: |
@@ -47,20 +47,7 @@ jobs:
         working-directory: ./android
         run: |
           chmod +x ./gradlew
-          ./gradlew assembleDebug --stacktrace > gradle_log.txt 2>&1 || {
-            echo "## Gradle Build Error" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            tail -n 100 gradle_log.txt >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            git config --global user.name "github-actions[bot]"
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            cp gradle_log.txt ../gradle_log.txt
-            cd ..
-            git add gradle_log.txt
-            git commit -m "ci: capture gradle_log.txt [skip ci]"
-            git push origin HEAD:main
-            exit 1
-          }
+          ./gradlew assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
