@@ -25,6 +25,9 @@ jobs:
 
       - name: Build Next.js App (Static Export)
         run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: "https://xcgzhdicwotsbpdankna.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjZ3poZGljd290c2JwZGFua25hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwODU5MzYsImV4cCI6MjA5MzY2MTkzNn0.kr0XdmH2EubX6kUtZ3VvBftadzVUb9PTjfFlgKPh7T4"
 
       - name: Setup Java JDK
         uses: actions/setup-java@v4
