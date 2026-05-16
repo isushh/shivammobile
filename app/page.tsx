@@ -165,7 +165,7 @@ export default function Page() {
       )}
 
       <Toast message={toast} />
-      <WhatsAppWidget />
+      {activePage !== "staff" && activePage !== "owner" && <WhatsAppWidget />}
     </>
   );
 }
