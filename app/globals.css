@@ -1,6 +1,6 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
-/* ── ROOT VARIABLES ── */
+/* â”€â”€ ROOT VARIABLES â”€â”€ */
 :root {
   --bg: #11120D;
   --text: #d8cfbc;
@@ -14,7 +14,7 @@
   --sand: #d8cfbc;
   --slate: #c1d1cf;
   --error: #df2531;
-  /* Legacy aliases kept for compat — mapped to new colors */
+  /* Legacy aliases kept for compat â€” mapped to new colors */
   --teal: #06392f;
   --teal-glow: #5196CE;
   --purple: #5196CE;
@@ -57,7 +57,7 @@ body {
   min-height: 100vh;
 }
 
-/* Dot-grid texture overlay — warm sand tones */
+/* Dot-grid texture overlay â€” warm sand tones */
 body::before {
   content: '';
   position: fixed;
@@ -79,7 +79,7 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ── PRIMARY TYPOGRAPHY ── */
+/* â”€â”€ PRIMARY TYPOGRAPHY â”€â”€ */
 .primary-typography {
   font-family: 'Outfit', 'Inter', sans-serif !important;
   color: #ffffff;
@@ -107,6 +107,7 @@ body::after {
   line-height: 1.1;
   background: linear-gradient(to bottom, #fff, #ccc);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -127,7 +128,7 @@ body::after {
   .typewriter-caret.block-caret { width: 10px !important; height: 18px !important; }
 }
 
-/* ── NAVBAR ── */
+/* â”€â”€ NAVBAR â”€â”€ */
 nav {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -260,7 +261,7 @@ nav.transparent-nav {
 }
 .btn-logout:hover { background: rgba(223,37,49,0.08); }
 
-/* ── MEGA MENU ── */
+/* â”€â”€ MEGA MENU â”€â”€ */
 .mega-menu {
   position: absolute;
   top: 80px;
@@ -396,12 +397,12 @@ nav.transparent-nav {
   text-decoration: none;
 }
 
-/* ── PAGES ── */
+/* â”€â”€ PAGES â”€â”€ */
 .page { display: none; padding-top: 62px; min-height: 100vh; }
 .page.active { display: block; animation: fadeUp .5s ease; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ── LIQUID BUTTON ── */
+/* â”€â”€ LIQUID BUTTON â”€â”€ */
 .liquid-btn {
   position: relative; overflow: hidden; background: var(--forest); color: #d8cfbc; border: none;
   padding: .85rem 2.2rem; font-family: 'Montserrat', sans-serif; font-weight: 700;
@@ -417,11 +418,11 @@ nav.transparent-nav {
 .liquid-btn:active { transform: scale(0.97); }
 .liquid-btn span { position: relative; z-index: 1; }
 
-/* ── GRADIENT UTILITIES ── */
+/* â”€â”€ GRADIENT UTILITIES â”€â”€ */
 .gradient-text {
   background: var(--gradient-text);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background-clip: text;`r`n  -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .gradient-border {
@@ -441,14 +442,14 @@ nav.transparent-nav {
   pointer-events: none;
 }
 
-/* ── HERO ── */
+/* â”€â”€ HERO â”€â”€ */
 .hero {
   min-height: calc(100vh - 62px); display: flex; flex-direction: column;
   align-items: flex-start; justify-content: center; text-align: left;
   padding: 4rem 6% 6rem; position: relative; overflow: hidden;
   background: transparent !important;
 }
-/* Purple/forest glow orb behind hero — warm green */
+/* Purple/forest glow orb behind hero â€” warm green */
 .hero::before {
   content: '';
   position: absolute;
@@ -527,7 +528,7 @@ nav.transparent-nav {
 .hero-ui-phone-price { font-size: .7rem; color: var(--teal-glow); font-weight: 700; margin-top: .1rem; }
 .hero-ui-badge { font-size: .55rem; background: rgba(13,148,136,.15); color: var(--teal-glow); padding: .15rem .4rem; border-radius: 4px; font-weight: 700; }
 
-/* ── HERO SEQUENCE CANVAS ── */
+/* â”€â”€ HERO SEQUENCE CANVAS â”€â”€ */
 .canvas-wrapper {
   position: fixed;
   inset: 0;
@@ -586,7 +587,7 @@ nav.transparent-nav {
   border-radius: 4px;
 }
 
-/* ── MARQUEE ── */
+/* â”€â”€ MARQUEE â”€â”€ */
 .marquee-section {
   padding: 1.5rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
   overflow: hidden; position: relative;
@@ -608,7 +609,7 @@ nav.transparent-nav {
   background: var(--leather); opacity: .6; flex-shrink: 0;
 }
 
-/* ── BENTO ── */
+/* â”€â”€ BENTO â”€â”€ */
 .section { padding: 5rem 3rem; max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; background: transparent !important; }
 .section-label {
   display: inline-flex; align-items: center; gap: .5rem;
@@ -817,14 +818,14 @@ nav.transparent-nav {
   .card-description { font-size: 0.95rem; }
 }
 
-/* ── GLOWING LINE SEPARATOR ── */
+/* â”€â”€ GLOWING LINE SEPARATOR â”€â”€ */
 .glow-divider {
   width: 100%; height: 1px;
   background: linear-gradient(90deg, transparent, rgba(81,150,206,.4), rgba(181,136,99,.3), transparent);
   margin: 0;
 }
 
-/* ── CATALOG ── */
+/* â”€â”€ CATALOG â”€â”€ */
 .filter-bar { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
 .filter-chip {
   padding: .4rem 1rem; border: 1px solid var(--border); border-radius: 20px;
@@ -858,7 +859,7 @@ nav.transparent-nav {
 }
 .wa-btn:hover { opacity: .88; }
 
-/* ── MODAL ── */
+/* â”€â”€ MODAL â”€â”€ */
 .modal-overlay {
   display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75);
   z-index: 600; align-items: center; justify-content: center;
@@ -882,7 +883,7 @@ nav.transparent-nav {
 }
 .close-btn:hover { border-color: var(--teal); color: var(--teal); }
 
-/* ── STAFF PORTAL ── */
+/* â”€â”€ STAFF PORTAL â”€â”€ */
 .staff-center { max-width: 480px; margin: 0 auto; text-align: center; padding: 2rem 1rem; }
 .camera-wrap {
   position: relative; width: 230px; height: 230px; margin: 1.8rem auto;
@@ -926,7 +927,7 @@ video, canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
 .cam-msg { font-size: .78rem; color: var(--subtext); margin-bottom: .5rem; height: 1.2rem; }
 .att-label { font-size: .68rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtext); margin-bottom: .6rem; display: block; }
 
-/* ── OWNER DASHBOARD ── */
+/* â”€â”€ OWNER DASHBOARD â”€â”€ */
 .owner-page {
   color: var(--sand);
   min-height: calc(100vh - 62px); padding: 2rem 2.5rem;
@@ -1003,7 +1004,7 @@ video, canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
 .chip { font-size: .62rem; padding: .2rem .55rem; background: rgba(45,212,191,.1); color: var(--teal-glow); border-radius: 2px; font-weight: 700; }
 .live-clock { font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--blue); }
 
-/* ── FOOTER ── */
+/* â”€â”€ FOOTER â”€â”€ */
 footer {
   padding: 6rem 3rem 4rem;
   background: rgba(10, 10, 18, 0.4);
@@ -1045,7 +1046,7 @@ footer {
   text-transform: uppercase;
 }
 
-/* ── TOAST ── */
+/* â”€â”€ TOAST â”€â”€ */
 .toast {
   position: fixed; bottom: 2rem; right: 2rem; background: var(--forest); color: var(--sand);
   padding: .8rem 1.5rem; border-radius: 8px; font-weight: 700; font-size: .82rem;
@@ -1056,8 +1057,8 @@ footer {
 }
 .toast.show { transform: translateY(0); }
 
-/* ── RESPONSIVE ── */
-/* ── OWNER DASHBOARD (extended) ── */
+/* â”€â”€ RESPONSIVE â”€â”€ */
+/* â”€â”€ OWNER DASHBOARD (extended) â”€â”€ */
 .owner-page {
   padding: 2.5rem;
   min-height: 100vh;
@@ -1286,7 +1287,7 @@ footer {
   .hero-cta-row { flex-direction: column; }
 }
 
-/* ── WHATSAPP WIDGET ── */
+/* â”€â”€ WHATSAPP WIDGET â”€â”€ */
 .cow-widget {
   position: fixed;
   right: max(24px, calc(env(safe-area-inset-right, 0px) + 24px));
